@@ -1,0 +1,186 @@
+---
+title: "Bar Charts with Diamonds Dataset"
+author: "Rachel Saidi"
+date: "6/1/2021"
+format: html
+---
+
+## Access Library package - Tidyverse
+
+```{r message=FALSE}
+library(tidyverse)
+```
+
+## Load the pre-built dataset, Diamonds, and view it in the global environment
+
+```{r}
+head(diamonds)  # shows the first few lines of the dataset
+data(diamonds)   # places the dataset in the global environment
+```
+
+## Statistical transformations (from R for Data Science)
+
+Bar charts seem simple, but they are interesting because they reveal something subtle about plots. Consider a basic bar chart, as drawn with **geom_bar(**). The following chart displays the total number of diamonds in the diamonds dataset, **grouped by cut.** The diamonds dataset comes in ggplot2 and contains information about \~54,000 diamonds, including the **price, carat, color, clarity, and cut** of each diamond. The bar graph shows that more diamonds are available with high quality cuts than with low quality cuts.
+
+## First Bar Plot
+
+```{r}
+ggplot(data = diamonds) + 
+  geom_bar(aes(x = cut))
+```
+
+## How do bar charts work with 2 variables?
+
+Bar graphs are EASY when you have a single categorical variable that defines several levels for each observation. Ex: "cut" has levels: fair, good, very good, premium, and ideal. Each observation is categorized this way. But what if you have a table of aggregated data: x = cut vs y = frequency?
+
+Here is a tibble to show this table and how you can create a bar graph from this data
+
+## A Tibble (think of this like a dataframe)
+
+We will create a frequency table of the types of cuts that mimick the calculations done to create geom_bar
+
+```{r}
+demo <- tribble(
+	  ~cut,         ~freq,
+	  "Fair",       1610,
+	  "Good",       4906,
+	  "Very Good",  12082,
+	  "Premium",    13791,
+	  "Ideal",      21551
+	)
+```
+
+## Demo Tibble Bar Plot Looks just like our other bar graphs
+
+```{r}
+ggplot(data = demo) +
+  geom_bar(mapping = aes(x = cut, y = freq), stat = "identity")
+```
+
+(Don’t worry that you haven’t seen \<- or tribble() before. You might be able to guess at their meaning from the context, and you’ll learn exactly what they do soon!)
+
+## Creating Proportional Bars
+
+You might want to override the default mapping from transformed variables to aesthetics. For example, you might want to display a bar chart of proportion, rather than count:
+
+## Proportional Bar Graph (Relative Frequencies)
+
+You need “group=1” when plotting proportions (try to omit it and see)
+
+```{r}
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, y = stat(prop), group = 1)) +
+  labs(x = "Diamond Cut", y = "Proportion", 
+       title = "Proportional Bar Graph of Diamond Cuts")
+```
+
+
+To find the variables computed by the stat, look for the help section titled “computed variables”.
+
+## This is a different type of plot that shows a line with min, max, and median values
+
+You might want to draw greater attention to the statistical transformation in your code. For example, you might use stat_summary(), which summarises the y values for each unique x value, to draw attention to the summary that you’re computing:
+
+## Line Plot
+
+This is a different way of visualizing center and spread of cuts and depth
+
+```{r}
+ggplot(data = diamonds) + 
+	 stat_summary(
+	    mapping = aes(x = cut, y = depth),
+	    fun.min = min,
+	    fun.max = max,
+	    fun = median
+  )
+```
+
+## Fill vs Color
+
+### Position adjustments
+
+There's one more piece of magic associated with bar charts. You can color a bar chart using either the color aesthetic, or, more usefully, fill:
+
+Notice that "fill=" fills the inside of the bar, whereas "color=" draws a color outline of the bar. Alpha gives a level of transparency, with alpha = 0 is invisible and alpha = 1 is fully saturated
+
+## Bar Plot with Alpha Transparency
+
+```{r}
+ggplot(data = diamonds, aes(x=cut, fill = cut)) + 
+  geom_bar(alpha = 0.5)+  # try replacing alpha = 0.5 with 0.8 to see how it changes
+  labs(x = "Diamond Cut", y = "Frequency", 
+       title = "Frequency Bar Graph of Diamond Cuts")
+```
+
+## Try stacking bar graphs with position = "stack"
+
+Note what happens if you map the fill aesthetic to another variable, like clarity: the bars are automatically stacked. Each colored rectangle represents a combination of cut and clarity.
+
+```{r}
+ggplot(data = diamonds) + 
+  geom_bar(aes(x = cut, fill = clarity), position = "stack") +
+    labs(x = "Diamond Cut", y = "Frequency", 
+       title = "Stacked Bar Graph of Diamond Cuts by Clarity")
+```
+
+The identity position adjustment is more useful for 2d geoms, like points, where it is the default.  position = "fill" works like stacking, but makes each set of stacked bars the same height. This makes it easier to compare proportions across groups.
+
+## Using position = "fill" the bars fill the vertical space proportionally
+
+```{r}
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = clarity), position = "fill") +
+    labs(x = "Diamond Cut", y = "Proportion", 
+       title = "Proportional Bar Graph of Diamond Cuts by Clarity")
+```
+
+## Position = "dodge" will get side-by-side bars
+
+```{r}
+ggplot(data = diamonds, aes(x = cut, fill = clarity)) + 
+	  geom_bar(alpha = .7, position = "dodge") +
+    labs(x = "Diamond Cut", y = "Frequency", 
+       title = "Side-by-Side Bar Graph of Diamond Cuts by Clarity")
+
+```
+
+## Change the angle of the x-axis labels
+
+When x-axis labels are too long, they may overlap. You can change the text angle with axis.text.x = element_text(angle = 45))
+
+```{r}
+ggplot(data = diamonds, aes(x = cut, fill = clarity)) +
+  geom_bar(alpha = .7, position = "dodge") +
+    labs(x = "Diamond Cut", y = "Frequency", 
+       title = "Side-by-Side Bar Graph of Diamond Cuts by Clarity") +
+  theme(axis.text.x = element_text(angle = 45))
+```
+
+## Finally, make the x-axis labels fit in a narrow width
+
+Here is another option for dealing with x-axis labels when they are long. You can use this function to break words into 2 lines.
+
+```{r}
+ggplot(data = diamonds, aes(x = cut, fill = clarity)) +
+  geom_bar(alpha = .7, position = "dodge") +
+  labs(x = "Diamond Cut", y = "Frequency", 
+       title = "Side-by-Side Bar Graph of Diamond Cuts by Clarity") +
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 5))
+# notice "very good" will fit on two lines instead of one line
+```
+
+
+## Bonus "bar-like" graph - Polar Plot
+
+```{r}
+
+bar <- ggplot(data = diamonds) + 
+  geom_bar(aes(x = clarity, fill = clarity), 
+           show.legend = FALSE, width = 1) + 
+  theme(aspect.ratio = 1)
+bar + coord_flip()
+
+bar + coord_polar()
+```
+
+
