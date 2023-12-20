@@ -1,0 +1,353 @@
+---
+title: "Data Journalism"
+author: "Rachel Saidi"
+date: "May 21, 2022"
+format: revealjs
+scrollable: true
+ 
+execute: 
+  echo: true
+  warning: false
+---
+
+## Remember to set your working directory
+
+Recall that you set the working directory to this folder by selecting from the top menu Session\>Set Working Directory\>Choose Directory. Then select the folder where you are keeping all your datasets for this class. By doing this, we can load the files in this directory without having to refer to the full path for their location, and anything we save will be written to this folder.
+
+Once you set your working directory for where you will access your stored data
+
+## Load the "tidyverse" then read in the data
+
+```{r}
+library(tidyverse)
+setwd("C:/Users/rsaidi/Dropbox/Rachel/MontColl/Datasets/Datasets")
+pfizer <- read_csv("pfizer.csv")
+fda <- read_csv("fda.csv")
+```
+
+Notice that the Environment now contains two objects, of the type tbl_df.
+
+## Comment your code
+
+Anything that appears on a line after \# will be treated as a comment, and will be ignored when the code is run. Get into the habit of commenting your code: Don't trust yourself to remember what it does! Data journalism should ideally be fully documented and reproducible.
+
+## Update your R packages
+
+Each time you start R, it's a good idea to click on Update in the Packages panel to update all your installed packages to the latest versions. Installing a package makes it available to you, but to use it in any R session you need to load it. You can do this by checking its box in the Packages tab. However, we will enter the following code into our script, then highlight these lines of code and run them:
+
+# Manipulate the pfizer and fda data
+
+Recall that the pfizer dataset contains information about Pfizer payments to doctors and warning letters sent by food and drug administration
+
+## Examine the data
+
+We can View data at any time by clicking on its table icon in the Environment tab in the Grid view.
+
+Alternatively, you can use code we learned in the last unit - head(data). Notice the variable names and types.
+
+```{r}
+head(pfizer)
+```
+
+## Now view the fda data
+
+```{r }
+head(fda)
+```
+
+Notice that issued has been recognized as a Date variable. Other common data types include num, for numbers that may contain decimals and POSIXct for full date and time.
+
+To specify an individual column use the name of the data frame and the column name, separated by \$. Determine the class for the variable "total"
+
+```{r}
+class(pfizer$total) 
+```
+
+If you need to change the data type for any column, use the following functions:
+
+. as.character converts to a text string
+
+. as.numeric converts to a number
+
+. as.factor converts to a categorical variable
+
+. as.integer converts to an integer
+
+. as.Date converts to a date
+
+. as.POSIXct convets to a full date and time
+
+(Conversions to full dates and times can get complicated, because of timezones.
+
+The summary function will run a quick statistical summary of a data frame, calculating mean, median and quartile values for continuous variables:
+
+```{r}
+summary(pfizer)  # summary of pfizer data
+```
+
+## Manipulate and analyze data
+
+Now we will use dplyr to manipulate the data, using operations and functions:
+
+. Sort: Largest to smallest, oldest to newest, alphabetical etc.
+
+. select - Choose which columns to include.
+
+. filter - Filter the data.
+
+. arrange - Sort the data, by size for continuous variables, by date, or alphabetically.
+
+. group_by - Group the data by a categorical variable.
+
+. mutate - Create new column(s) in the data, or change existing column(s).
+
+. rename - Rename column(s).
+
+. bind_rows - Merge two data frames into one, combining data from columns with the same name.
+
+## Summarize has special additional functions associated with it
+
+. summarize - Summarize, or aggregate (for each group if following group_by). Often used in conjunction with functions including:
+
+-   mean Calculate the mean, or average
+
+-   median Calculate the median
+
+-   max Find the maximum value
+
+-   min Find the minimum value
+
+-   sum Add all the values together
+
+-   n Count the number of records
+
+There are also various functions to join data, which we will explore below.
+
+## Explore the pfizer dataset
+
+We will explore this dataset, filtering in many ways, in order to see if there are doctors who have behaved unethically by taking money from Pfizer Pharma and then we will join that dataset with the FDA dataset that reveals doctors who have received warnings for this unethical behavior.
+
+## Filter and sort data
+
+Filter and sort the data in specific ways. For each of the following examples, copy the code that follows into your script, and view the results. Notice how we create a new objects to hold the processed data.
+
+Find doctors in California paid \$10,000 or more by Pfizer to run "Expert-Led Forums."
+
+```{r}
+# doctors in California who were paid $10,000 or more by Pfizer to run "Expert-Led Forums."
+ca_expert_10000 <- pfizer %>%
+  filter(state == "CA" & total >= 10000 & category == "Expert-Led Forums")
+```
+
+Notice the use of == to find values that match the specified text, \>= for greater than or equal to, and the Boolean operator &.
+
+## Add a sort to the end of the code to list the doctors in descending order by the payments received:
+
+```{r}
+# doctors in California who were paid $10,000 or more by Pfizer to run "Expert-Led Forums."
+ca_expert_10000 <- pfizer %>%
+  filter(state == "CA" & total >= 10000 & category == "Expert-Led Forums") %>%
+  arrange(desc(total))
+```
+
+If you arrange without the desc function, the sort will be from smallest to largest.
+
+## Boolean Operators (&, \|, ==, \>, \<, \>=, \<=, !=)
+
+Notice the use of the \| Boolean operator, and the brackets around that part of the query. This ensures that this part of the query is run first. See what happens if you exclude them.
+
+```{r}
+# Find doctors in states other than California who were paid $10,000 or more by Pfizer to run "Expert-Led Forums."
+not_ca_expert_10000 <- pfizer %>%
+  filter(state != "CA" & total >= 10000 & category=="Expert-Led Forums") %>%
+  arrange(desc(total))
+```
+
+## Notice the use of the != operator to exclude doctors in California.
+
+```{r}
+# Find the 20 doctors across the four largest states (CA, TX, FL, NY) who were paid the most for professional advice.
+ca_ny_tx_fl_prof_top20 <- pfizer %>%
+  filter((state=="CA" | state == "NY" | state == "TX" | state == "FL") &     category == "Professional Advising") %>%
+  arrange(desc(total)) %>%
+  head(6)
+```
+
+Notice the use of head, which grabs a defined number of rows from the start of a data frame. Here, it is crucial to run the sort first! See what happens if you change the order of the last two lines.
+
+## Filter the data for all payments for running Expert-Led Forums or for Professional Advising, and arrange alphabetically by doctor (last name, then first name)
+
+```{r}
+expert_advice <- pfizer %>%
+  filter(category == "Expert-Led Forums" | category == "Professional Advising") %>%
+  arrange(last_name, first_name) %>%
+  head(20)
+expert_advice
+```
+
+Notice that you can sort by multiple variables, separated by commas. Use pattern matching to filter text.
+
+## Use the **grepl** function to find values containing a particular string of text. This can simplify the code used to filter based on text.
+
+```{r}
+# use pattern matching with grepl to filter text
+expert_advice <- pfizer %>%
+  filter(grepl("Expert|Professional", category)) %>%
+  arrange(last_name, first_name)
+
+not_expert_advice <- pfizer %>%
+  filter(!grepl("Expert|Professional", category)) %>%
+  arrange(last_name, first_name)
+```
+
+This code differs only by the ! Boolean operator. Notice that it has split the data into two, based on categories of payment.
+
+Append one data frame to another.
+
+## Use the bind_rows function to append one data frame to another, which recreates unfiltered data from the two data frames above
+
+```{r}
+# merge/append data frames
+pfizer2 <- bind_rows(expert_advice, not_expert_advice)
+```
+
+## Write data to a CSV file
+
+readr can write data to CSV and other text files.
+
+```{r}
+# write expert_advice data to a csv file
+write_csv(expert_advice, "expert_advice.csv", na="")
+```
+
+na="" ensures that any empty cells in the data frame are saved as blanks - R represents null values as NA, so if you don't include this, any null values will appear as NA in the saved file.
+
+## Group and summarize data
+
+Calculate the total payments, by state
+
+```{r}
+# calculate total payments by state
+state_sum <- pfizer %>%
+  group_by(state) %>%
+  summarize(sum = sum(total)) %>%
+  arrange(desc(sum))
+```
+
+Notice the use of group_by followed by summarize to group and summarize data, here using the function sum.
+
+## Calculate some additional summary statistics, by state
+
+```{r}
+# As above, but for each state also calculate the median payment, and the number of payments
+state_summary <- pfizer %>%
+  group_by(state) %>%
+  summarize(sum = sum(total), median = median(total), count = n()) %>%
+  arrange(desc(sum))
+```
+
+Notice the use of multiple summary functions, sum, median, and n. (You don't specify a variable for n because it is simply counting the number of rows in the data.)
+
+## Group and summarize for multiple categories
+
+```{r}
+# as above, but group by state and category
+state_category_summary <- pfizer %>%
+  group_by(state, category) %>%
+  summarize(sum = sum(total), median = median(total), count = n()) %>%
+  arrange(state, category)
+```
+
+As for arrange, you can group_by by multiple variables, separated by commas.
+
+## Working with dates
+
+Now let's see how to work with dates, using the FDA warning letters data.
+
+Filter the data for letters sent from the start of 2005 onwards. FDA sent warning letters from the start of 2005 onwards
+
+You will have to fix "issued"" to be read as a date. If you look back at str(fda), it was read in as a chr (character). To coerce it to be a date, use the command,
+
+```{r}
+fda$issued <- as.Date(fda$issued, "%m/%d/%Y")
+class(fda$issued)
+```
+
+```{r}
+post2005 <- fda %>%
+  filter(issued >= "2005-01-01") %>%
+  arrange(issued)
+```
+
+Notice that operators like \>= can be used for dates, as well as for numbers.
+
+## Count the number of letters issued by year
+
+```{r}
+# count the letters by year
+letters_year <- fda %>%
+  mutate(year = format(issued, "%Y")) %>%
+  group_by(year) %>%
+  summarize(letters=n())
+```
+
+This code introduces dplyr's mutate function to create a new column in the data. The new variable year is the four-digit year "%Y (see here for more on time and date formats in R), extracted from the issued dates using the format function. Then the code groups by year and counts the number of letters for each one.
+
+Add columns giving the number of days and weeks that have elapsed since each letter was sent
+
+```{r}
+# add new columns showing many days and weeks elapsed since each letter was sent
+fda <- fda %>%
+  mutate(days_elapsed = Sys.Date() - issued,
+          weeks_elapsed = difftime(Sys.Date(), issued, units = "weeks"))
+```
+
+Notice in the first line that this code changes the fda data frame, rather than creating a new object. The function Sys.Date returns the current date, and if you subtract another date, it will calculate the difference in days. To calculate date and time differences using other units, use the difftime function.
+
+Notice also that you can mutate multiple columns at one go, separated by commas.
+
+## Join data from two data frames
+
+Here is an animation for the different types of joins: https://github.com/gadenbuie/tidyexplain
+
+There are a number of join functions in dplyr to combine data from two data frames. Here are the most useful:
+
+. inner_join() returns values from both tables only where there is a match
+
+. left_join() returns all the values from the first-mentioned table, plus those from the second table that match
+
+. semi_join() filters the first-mentioned table to include only values that have matches in the second table
+
+. anti_join() filters the first-mentioned table to include only values that have no matches in the second table.
+
+To illustrate, these joins will find doctors paid by Pfizer to run expert led forums who had also received a warning letter from the FDA:
+
+## Join to identify doctors paid to run Expert-led forums who also received a warning letter
+
+```{r}
+expert_warned_inner <- inner_join(pfizer, fda, by=c("first_name" = "name_first", "last_name" = "name_last")) %>%
+  filter(category=="Expert-Led Forums")
+
+expert_warned_semi <- semi_join(pfizer, fda, by=c("first_name" = "name_first", "last_name" = "name_last")) %>%
+  filter(category=="Expert-Led Forums")
+```
+
+The code in by=c() defines how the join should be made. If instructions on how to join the tables are not supplied, dplyr will look for columns with matching names, and perform the join based on those.
+
+The difference between the two joins above is that the first contains all of the columns from both data frames, while the second gives only columns from the pfizer data frame.
+
+In practice, you may wish to inner_join and then use dplyr's select function to select the columns that you want to retain, for example:
+
+## Select desired columns from data
+
+```{r}
+expert_warned <- inner_join(pfizer, fda, by=c("first_name" = "name_first", "last_name" = "name_last")) %>%
+  filter(category=="Expert-Led Forums") %>%
+  select(first_plus, last_name, city, state, total, issued)
+
+expert_warned <- inner_join(pfizer, fda, by=c("first_name" = "name_first", "last_name" = "name_last")) %>%
+  filter(category=="Expert-Led Forums") %>%
+  select(2:5,10,12)
+```
+
+Notice that you can select by columns' names, or by their positions, where 1 is the first column, 3 is the third, and so on.
