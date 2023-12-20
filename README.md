@@ -6,15 +6,17 @@ Resources that may be used throughout the DATA 110 course
 
 1. Course datasets: http://bit.ly/data110datasets
 
-2. Links to data sources and data repositories: https://docs.google.com/document/d/1p39ZHNYc3MPkJFzusIbg8qxStVcoxMvAt2reAuiIjGE/edit#heading=h.bdek277mx65c
+2. Links to data sources and data repositories:
+   https://docs.google.com/document/d/1p39ZHNYc3MPkJFzusIbg8qxStVcoxMvAt2reAuiIjGE/edit#heading=h.bdek277mx65c
 
-3. DATA 110 Articles on Reproducibility, Elevator Pitches, and Data for Good: https://drive.google.com/drive/folders/1vR4Ay9FrpDd-A2jEgWdIbhimgluz-VzQ?usp=sharing
+4. DATA 110 Articles on Reproducibility, Elevator Pitches, and Data for Good:
+   https://drive.google.com/drive/folders/1vR4Ay9FrpDd-A2jEgWdIbhimgluz-VzQ?usp=sharing
 
-4. Links for Installing R and R Studio
+5. Links for Installing R and R Studio
    Installing R: https://cran.r-project.org/ 
    Installing R Studio: https://posit.co/download/rstudio-desktop/
 
-5. Hadly Wickam's "how to" text for Data Analysts is R for Data Science 2e: https://r4ds.hadley.nz/
+6. Hadly Wickam's "how to" text for Data Analysts is R for Data Science 2e: https://r4ds.hadley.nz/
 
 ## Unit 1 - Intro to Data Visualization
 - Use these notes to get started:     [**Unit 1 Notes - Intro to Data Visualization and R Studio**](./Data110_unit1.pdf)
