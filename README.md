@@ -1,4 +1,5 @@
 # Welcome-to-DATA-110
+![logo for github](https://github.com/rjsaidi/Welcome-to-DATA-110/assets/33728906/6ac013f0-474c-46fa-bd98-23ccbb61f5e6)
 Welcome to DATA 110 Data Visualization and Communication. This site will include course materials, resources, and assignments. 
 
 ## Course Resources
