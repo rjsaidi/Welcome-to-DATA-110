@@ -26,7 +26,7 @@ Resources that may be used throughout the DATA 110 course
 ## Unit 2 - Using Github and Handling Data
 
 - Use these notes to get started:  [**Unit 2 Notes - Using Github and Handling Data**](./Data110_unit2.pdf)
-  -  Use this Quarto document for your first coding assignment using the pre-built Airquality dataset:    [Airquality HW](./Airquality_HW.qmd)
+- Use this Quarto document for your first coding assignment using the pre-built Airquality dataset:    [Airquality HW](./Airquality_HW.qmd)
 
 ## Unit 3 - Reading in Data in 3 Different Ways
 
