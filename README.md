@@ -17,13 +17,13 @@ Resources that may be used throughout the DATA 110 course
 5. Hadly Wickam's "how to" text for Data Analysts is R for Data Science 2e: https://r4ds.hadley.nz/
 
 ## Unit 1 - Intro to Data Visualization
-- [**Unit 1 Notes - Intro to Data Visualization and R Studio**](./Data110_unit1.pdf)
-  - Here is your first Quarto document. You will learn how to create bar charts using the pre-built Diamonds dataset
-  - [Bar Charts with Diamonds Dataset](./bar_charts_with_diamonds.qmd)
+- Use these notes to get started [**Unit 1 Notes - Intro to Data Visualization and R Studio**](./Data110_unit1.pdf)
+  - Here is your first Quarto document. You will learn how to create bar charts using the pre-built Diamonds dataset [Bar Charts with Diamonds Dataset](./bar_charts_with_diamonds.qmd)
 
 ## Unit 2 - Using Github and Handling Data
 
-Unit 2 Materials
+- Use these notes to get started[**Unit 2 Notes - Using Github and Handling Data**](./Data110_unit2.pdf)
+  -  Use this Quarto document for your first coding assignment using the pre-built Airquality dataset ][Airquality HW](./Airquality HW.qmd)
 
 ## Unit 3 - Reading in Data in 3 Different Ways
 
