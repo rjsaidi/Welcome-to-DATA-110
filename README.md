@@ -22,6 +22,8 @@ Resources that may be used throughout the DATA 110 course
 - Use these notes to get started:     [**Unit 1 Notes - Intro to Data Visualization and R Studio**](./Data110_unit1.pdf)
 - Here is your first Quarto document. You will learn how to create bar charts using the pre-built Diamonds dataset:
      - [Bar Charts with Diamonds Dataset](./bar_charts_with_diamonds.qmd)
+- Here is the same Bar Charts tutorial as slides:
+     - [Bar Charts with Diamonds Slides](./bar charts with diamonds dataset.pptx)
 
 ## Unit 2 - Using Github and Handling Data
 
@@ -33,7 +35,8 @@ Resources that may be used throughout the DATA 110 course
 
 - Use these notes to get started: [**Unit 3 Notes - Tidyverse, Accessibility, and Reading in Data into R Studio](./Data110_unit3.pdf)
 - Use this Quarto document to learn how to read in data to R Studio in different ways:
-     - 
+     - [Reading in Data in 3 Different Ways](./reading data in three ways and accessibility.qmd)
+     - [Hate Crimes NYC Tutorial](./hate crimes ny.qmd)
 
 ## Unit 4 - Data Ethics, P-hacking, Reproducibility, and Data Journalism
 
