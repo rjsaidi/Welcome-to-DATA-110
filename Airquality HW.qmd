@@ -1,0 +1,175 @@
+---
+title: "Airquality Assignment"
+author: "Rachel Saidi"
+date: "May 5, 2023"
+format: revealjs
+scrollable: true
+execute: 
+  echo: true
+
+---
+
+# Airquality Tutorial and Homework Assignment 
+
+## Load in the Dataset
+
+Because airquality is a pre-built dataset, we can write it to our data directory to store it for later use.
+
+```{r}
+# install.packages("tidyverse")
+library(tidyverse)
+```
+
+## Load the dataset into your global environment
+
+```{r }
+airquality <- airquality
+```
+
+
+# Look at the structure of the data 
+
+
+the function, **head**, will only disply the first 6 rows of the dataset. Notice in the global environment to the right, there are 153 observations (rows)
+
+
+## View the data using the "head" function
+
+
+```{r}
+head(airquality)
+```
+
+## Calculate Summary Statistics
+
+If you want to look at specific statistics, here are some variations on coding. Here are 2 different ways to calculate "mean."
+
+```{r}
+mean(airquality$Temp)
+mean(airquality[,4])
+```
+
+## Calculate Median, Standard Deviation, and Variance
+
+```{r}
+median(airquality$Temp)
+sd(airquality$Wind)
+var(airquality$Wind)
+```
+
+# Change the Months from number to names 
+
+Number 5 - 9 to May through September
+
+```{r}
+airquality$Month[airquality$Month == 5]<- "May"
+airquality$Month[airquality$Month == 6]<- "June"
+airquality$Month[airquality$Month == 7]<- "July"
+airquality$Month[airquality$Month == 8]<- "August"
+airquality$Month[airquality$Month == 9]<- "September"
+```
+
+## Now look at the summary statistics of the dataset
+
+See how Month has changed to have characters instead of numbers
+
+```{r}
+summary(airquality$Month)
+```
+
+## Month is a categorical variable with different levels, called factors.
+
+Reorder the Months so they do not default to alphabetical
+
+```{r}
+airquality$Month<-factor(airquality$Month, levels=c("May", "June","July", "August", "September"))
+```
+
+## Plot 1: Create a histogram categorized by Month with qplot
+
+Here is a first attempt at viewing a histogram of temperature by the months May through September. We will see that temperatures increase over these months. The median temperature appears to be about 75 degrees.
+
+```{r}
+p1 <- airquality %>%
+  ggplot(aes(x=Temp, fill=Month)) +
+  geom_histogram(position="identity")+
+  scale_fill_discrete(name = "Month", labels = c("May", "June","July", "August", "September")) +
+  xlab("Monthly Temperatures from May - Sept") +
+  ylab("Frequency") +
+  ggtitle("Histogram of Monthly Temperatures from May - Sept")
+p1
+```
+
+# Plot 2: Make a histogram using ggplot
+
+ggplot is more sophisticated than qplot, but still uses ggplot2 package (within Tidyverse)
+
+Reorder the legend so that it is not the default (alphabetical), but rather in order that months come
+
+Outline the bars in white using the color = "white" command
+
+## Histogram of Average Temperature by Month
+
+Add some transparency and white borders around the histogram bars. Here July stands out for having high frequency of 85 degree temperatures. The dark purple color indicates overlaps of months due to the transparency.
+
+```{r}
+p2 <- airquality %>%
+  ggplot(aes(x=Temp, fill=Month)) +
+  geom_histogram(position="identity", alpha=0.5, binwidth = 5, color = "white")+
+  scale_fill_discrete(name = "Month", labels = c("May", "June","July", "August", "September")) +
+  xlab("Monthly Temperatures") +
+  ylab("Frequency") +
+  ggtitle("Histogram of Monthly Temperatures")
+p2
+```
+
+## Plot 3: Create side-by-side boxplots categorized by Month
+
+fill=Month command fills each boxplot with a different color in the aesthetics
+
+scale_fill_discrete makes the legend on the side for discrete color values
+
+use "labs" to include the title, axis labels, caption for the data source
+
+## Side by Side Boxplots of Average Temperature by Month
+
+We can see that August has the highest temperatures based on the boxplot distribution. Add a caption for the source for the datset. Note here we used "labs" to add the axis labels, title, and caption (source)
+
+```{r}
+p3 <- airquality %>%
+  ggplot(aes(Month, Temp, fill = Month)) + 
+  labs(x = "Months from May through September", y = "Temperatures", 
+       title = "Side-by-Side Boxplot of Monthly Temperatures",
+       caption = "New York State Department of Conservation and the National Weather Service") +
+  geom_boxplot() +
+  scale_fill_discrete(name = "Month", labels = c("May", "June","July", "August", "September"))
+p3 
+```
+
+# ** Notice that the points above and below the boxplots in June and July are outliers.
+
+
+## Plot 4: Make the same side-by-side boxplots, but in grey-scale
+
+Use the scale_fill_grey command for the grey-scale legend, and again, use fill=Month in the aesthetics
+
+## Side by Side Boxplots in Gray Scale
+
+Here we just changed the color paletted to gray scale
+
+```{r}
+p4 <- airquality %>%
+  ggplot(aes(Month, Temp, fill = Month)) + 
+  labs(x = "Monthly Temperatures", y = "Temperatures", 
+       title = "Side-by-Side Boxplot of Monthly Temperatures",
+       caption = "New York State Department of Conservation and the National Weather Service") +
+  geom_boxplot()+
+  scale_fill_grey(name = "Month", labels = c("May", "June","July", "August", "September"))
+p4
+```
+
+## Plot 5: Now make one plot on your own of any of the variables in this dataset. It may be a scatterplot, histogram, or boxplot.
+
+#### *Be sure to write a brief essay that describes the plot you have created, what the plot shows, and what code you used to make this modification.* {style="color: purple"}
+
+------------------------------------------------------------------------
