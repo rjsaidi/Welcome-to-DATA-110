@@ -31,7 +31,9 @@ Resources that may be used throughout the DATA 110 course
 
 ## Unit 3 - Reading in Data in 3 Different Ways
 
-Unit 3 Materials
+- Use these notes to get started: [**Unit 3 Notes - Tidyverse, Accessibility, and Reading in Data into R Studio](./Data110_unit3.pdf)
+- Use this Quarto document to learn how to read in data to R Studio in different ways:
+     - 
 
 ## Unit 4 - Data Ethics, P-hacking, Reproducibility, and Data Journalism
 
