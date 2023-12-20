@@ -8,7 +8,7 @@ Resources that may be used throughout the DATA 110 course
 
 2. Links to data sources and data repositories: https://docs.google.com/document/d/1p39ZHNYc3MPkJFzusIbg8qxStVcoxMvAt2reAuiIjGE/edit#heading=h.bdek277mx65c
 
-3. DATA 110 Articles on Reproducibility, Elevator Pitches, and Data for Good
+3. DATA 110 Articles on Reproducibility, Elevator Pitches, and Data for Good: https://drive.google.com/drive/folders/1vR4Ay9FrpDd-A2jEgWdIbhimgluz-VzQ?usp=sharing
 
 4. Links for Installing R and R Studio
    Installing R: https://cran.r-project.org/ 
