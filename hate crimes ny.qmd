@@ -1,0 +1,377 @@
+---
+title: "Hate Crimes in NY from 2010-2016"
+author: "Rachel Saidi"
+date: "May 5, 2020"
+format: html
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+## Hate Crimes Dataset
+
+This dataset looks at all types of hate crimes in New York counties by
+the type of hate crime from 2010 to 2016.
+
+My caveat:
+
+### Flawed hate crime data collection - we should know how the data was collected
+
+(Nathan Yau of Flowing Data, Dec 5, 2017)
+
+Data can provvictim_cate you with important information, but when the collection
+process is flawed, there's not much you can do. Ken Schwencke, reporting
+for ProPublica, researched the tiered system that the FBI relies on to
+gather hate crime data for the United States:
+
+"Under a federal law passed in 1990, the FBI is required to track and
+tabulate crimes in which there was 'manifest evvictim_catence of prejudice'
+against a host of protected groups, regardless of differences in how
+state laws define who's protected. The FBI, in turn, relies on local law
+enforcement agencies to collect and submit this data, but can't compel
+them to do so."
+
+This is a link to the ProPublica Article:
+https://www.propublica.org/article/why-america-fails-at-gathering-hate-crime-statistics
+
+Here is a data visualization of where hate crimes do NOT get reported
+around the country (Ken Schwencke, 2017):
+https://projects.propublica.org/graphics/hatecrime-map
+
+### So now we know that there is possible bias in the dataset, what can we do with it?
+
+```{r warning=FALSE, message=FALSE}
+library(tidyverse)
+#tinytex::install_tinytex()
+#library(tinytex)
+setwd("C:/Users/rsaidi/Dropbox/Rachel/MontColl/Datasets/Datasets")
+hatecrimes <- read_csv("hateCrimes2010.csv")
+```
+
+
+## Clean up the data:
+
+### Make all headers lowercase and remove spaces
+
+After cleaning up the variable names, look at the structure of the data.
+Since there are 44 variables in this dataset, you can use "summary" to decide which hate crimes to focus on. In the output of "summary", look at the min/max values. Some have a max-vale of 1.
+
+```{r}
+names(hatecrimes) <- tolower(names(hatecrimes))
+names(hatecrimes) <- gsub(" ","",names(hatecrimes))
+head(hatecrimes)
+```
+
+## Select only certain hate-crimes
+
+```{r}
+summary(hatecrimes)
+```
+
+
+I decided I would only look at the hate-crime types with a max number of 9 or more. That way I can focus on the most prominent types of hate-crimes.
+
+```{r}
+hatecrimes2 <- hatecrimes |>
+  select(county, year, 'anti-black', 'anti-white', 'anti-jewish', 'anti-catholic','anti-age*','anti-islamic(muslim)', `anti-multi-religiousgroups`, 'anti-gaymale', 'anti-hispanic', `anti-otherethnicity/nationalorigin`) |>
+  group_by(county, year)
+head(hatecrimes2)
+```
+
+## Check the dimensions and the summary to make sure no missing values
+
+Also check the dimensions to count how many variables remain
+
+```{r}
+dim(hatecrimes2)
+# There are currently 12 variables with 423 rows.
+summary(hatecrimes2)
+```
+
+## Convert from wide to long format
+
+Look at each set of hate-crimes for each type for each year. Convert the dataset from wide to long with the pivot_longer function. It will take each column's hate-crime type combine them all into one column called "victim_cat". Then each cell count will go into the new column, "crimecount". 
+
+Finally, we are only doing this for the quantitiative variables, which are in columns 3 - 10. Note the command facet_wrap requires (\~) before "victim_cat".
+
+```{r}
+hatelong <- hatecrimes2 |> 
+    pivot_longer(
+        cols = 3:12,
+        names_to = "victim_cat",
+        values_to = "crimecount")
+```
+
+## Now use the long format to create a facet plot
+
+```{r}
+hatecrimplot <-hatelong |> 
+  ggplot(aes(year, crimecount))+
+  geom_point()+
+  aes(color = victim_cat)+
+  facet_wrap(~victim_cat)
+hatecrimplot
+```
+
+## Look deeper into crimes against blacks, gay males, and jews
+
+From the facet_wrap plot above, anti-black, anti-gay males, and
+anti-jewish categories seem to have highest rates of offenses reported.
+Filter out just for those 3 crimes.
+
+```{r}
+hatenew <- hatelong |>
+  filter( victim_cat %in% c("anti-black", "anti-jewish", "anti-gaymale"))|>
+  group_by(year, county) |>
+  arrange(desc(crimecount))
+hatenew
+```
+
+## Plot these three types of hate crimes together
+
+Use the following commands to finalize your barplot: - position =
+"dodge" makes side-by-side bars, rather than stacked bars - stat =
+"identity" allows you to plot each set of bars for each year between
+2010 and 2016 - ggtitle gives the plot a title - labs gives a title to
+the legend
+
+```{r}
+plot2 <- hatenew |>
+  ggplot() +
+  geom_bar(aes(x=year, y=crimecount, fill = victim_cat),
+      position = "dodge", stat = "identity") +
+  labs(fill = "Hate Crime Type",
+       y = "Number of Hate Crime Incidents",
+       title = "Hate Crime Type in NY Counties Between 2010-2016",
+       caption = "Source: NY State Division of Criminal Justice Services")
+plot2
+```
+
+We can see that hate crimes against jews spiked in 2012. All other years
+were relatively consistent with a slight upward trend. There was also an
+upward trend in hate crimes against gay males. Finally, there appears to
+be a downward trend in hate crimes against blacks during this period.
+
+## What about the counties?
+
+I have not dealt with the counties, but I think that is the next place
+to explore. I can make bar graphs by county instead of by year.
+
+```{r}
+plot3 <- hatenew |>
+  ggplot() +
+  geom_bar(aes(x=county, y=crimecount, fill = victim_cat),
+      position = "dodge", stat = "identity") +
+  labs(fill = "Hate Crime Type",
+       y = "Number of Hate Crime Incidents",
+       title = "Hate Crime Type in NY Counties Between 2010-2016",
+       caption = "Source: NY State Division of Criminal Justice Services")
+plot3
+```
+
+## So many counties
+
+There are too many counties for this plot to make sense, but maybe we
+can just look at the 5 counties with the highest number of incidents. -
+use "group_by" to group each row by counties - use summarize to get the
+total sum of incidents by county - use arrange(desc) to arrange those
+sums of total incidents by counties in descending order. 
+
+```{r}
+counties <- hatenew |>
+  group_by(year, county)|>
+  summarize(sum = sum(crimecount)) |>
+  arrange(desc(sum))
+counties
+```
+
+## Top 5
+
+To list the 5 counties with the highest total incidents, change group_by to: group_by(county), then use slice_max(order_by = sum, n=5) to
+list the 5 counties with highest total incidents
+
+```{r}
+counties2 <- hatenew |>
+  group_by(county)|>
+  summarize(sum = sum(crimecount)) |>
+  slice_max(order_by = sum, n=5)
+counties2
+```
+
+Finally, create the barplot above, but only for the 5 counties in 2012
+with the highest incidents of hate-crimes. The command "labs" is nice,
+because you can get a title, subtitle, y-axis label, and legend title,
+all in one command.
+
+```{r}
+plot4 <- hatenew |>
+  filter(county %in% c("Kings", "New York", "Suffolk", "Nassau", "Queens")) |>
+  ggplot() +
+  geom_bar(aes(x=county, y=crimecount, fill = victim_cat),
+      position = "dodge", stat = "identity") +
+  labs(y = "Number of Hate Crime Incidents",
+       title = "5 Counties in NY with Highest Incidents of Hate Crimes",
+       subtitle = "Between 2010-2016", 
+       fill = "Hate Crime Type",
+      caption = "Source: NY State Division of Criminal Justice Services")
+plot4
+```
+
+## How would calculations be affected by looking at hate crimes in counties per year by population densities?
+
+Bring in census data for populations of New York counties. These are
+estimates from the 2010 census.
+
+```{r}
+setwd("C:/Users/rsaidi/Dropbox/Rachel/MontColl/Datasets/Datasets")
+nypop <- read_csv("newyorkpopulation.csv")
+```
+
+## Clean the county name to match the other dataset
+
+Rename the variable "Geography" as "county" so that it matches in the
+other dataset.
+
+```{r}
+nypop$Geography <- gsub(" , New York", "", nypop$Geography)
+nypop$Geography <- gsub("County", "", nypop$Geography)
+nypoplong <- nypop |>
+  rename(county = Geography) |>
+  gather("year", "population", 2:8) 
+nypoplong$year <- as.double(nypoplong$year)
+head(nypoplong)
+```
+
+## Focus on 2012
+
+Since 2012 had the highest counts of hate crimes, let's look at the
+populations of the counties in 2012.
+
+Clean the nypoplong12 variable, county, so that matches the counties12
+variable by Cutting off the ", New York" portion of the county listing
+
+```{r}
+nypoplong12 <- nypoplong |>
+  filter(year == 2012) |>
+  arrange(desc(population)) |>
+  head(10)
+nypoplong12$county<-gsub(" , New York","",nypoplong12$county)
+nypoplong12
+```
+
+Not surprisingly, 4/5 of the counties with the highest populations also
+were listed in the counties with the highest number of hate crimes. Only
+the Bronx, which has the fifth highest population is not in the list
+with the highest number of total hate crimes over the period from 2010
+to 2016.
+
+#### Recall the total hate crime counts:
+
+Kings 713
+New York 459
+Suffolk 360
+Nassau 298
+Queens 235
+
+## Filter hate crimes just for 2012 as well
+
+```{r}
+counties12 <- counties |>
+  filter(year == 2012) |>
+  arrange(desc(sum)) 
+counties12
+```
+
+## Join the Hate Crimes data with NY population data for 2012
+
+```{r}
+datajoin <- counties12 |>
+  full_join(nypoplong12, by=c("county", "year"))
+datajoin
+```
+
+## Calculate the rate of incidents per 100,000. Then arrange in descending order
+
+```{r}
+datajoinrate <- datajoin |>
+  mutate(rate = sum/population*100000) |>
+  arrange(desc(rate))
+datajoinrate
+```
+
+Notice that the highest rates of hate crimes in 2012 happened in:
+
+```{r}
+dt <- datajoinrate[,c("county","rate")]
+dt
+```
+
+But the highest populated counties were: Kings (Brooklyn), Queens, New
+York, Suffolk (Long Island), Bronx, and Nassau. They do not correspond
+directly, though they are similar, to the counties with highest rates of
+hate crimes.
+
+## Follow Up
+
+### Aggregating some of the categories
+
+```{r}
+
+aggregategroups <- hatecrimes |>
+  pivot_longer(
+    cols = 4:44,
+    names_to = "victim_cat",
+    values_to = "crimecount"
+  )
+unique(aggregategroups$victim_cat)
+```
+
+```{r}
+aggregategroups <- aggregategroups |>
+  mutate(group = case_when(
+    victim_cat %in% c("anti-transgender", "anti-gayfemale", "anti-gendervictim_catendityexpression", "anti-gaymale", "anti-gay(maleandfemale", "anti-bisexual") ~ "anti-lgbtq",
+    victim_cat %in% c("anti-multi-racialgroups", "anti-jewish", "anti-protestant", "anti-multi-religousgroups", "anti-religiouspracticegenerally", "anti-buddhist", "anti-hindu", "anti-mormon", "anti-sikh", "anti-catholic", "anti-islamic(muslim)", "anti-atheism/agnosticism", "anti-otherreligion", "anti-easternorthodox(greek,russian,etc.)", "anti-jehovahswitness", "anti-otherchristian") ~ "anti-religion", 
+    victim_cat %in% c("anti-asian", "anti-arab", "anti-non-hispanic", "anti-white", "anti-americanindian/alaskannative", "anti-nativehawaiian/pacificislander", "anti-otherrace", "anti-hispanic", "anti-otherethnicity/nationalorigin") ~ "anti-ethnicity",
+    victim_cat %in% c("anti-physicaldisability", "anti-mentaldisability") ~ "anti-disability",
+    victim_cat %in% c("anti-female", "anti-male") ~ "anti-gender",
+    TRUE ~ "others"))
+aggregategroups
+```
+
+### or create subset with just lgbtq
+
+```{r}
+lgbtq <- hatecrimes |>
+  pivot_longer(
+      cols = 4:44,
+      names_to = "victim_cat",
+      values_to = "crimecount") |>
+filter(victim_cat %in% c("anti-transgender", "anti-gayfemale", "anti-gendervictim_catendityexpression", "anti-gaymale", "anti-gay(maleandfemale", "anti-bisexual"))
+lgbtq
+```
+
+## So what does all of this mean?
+
+### Important Findings:
+
+1.  I wonder what the data would look like if there was a universally
+    accepted requirement for this type of data collection.
+
+2.  The Bronx appears to have much lower than expected incvictim_catents of hate
+    crimes relative to its population density in comparison to other NY
+    counties.
+
+3.  In Kings County, NY (which is home to Brooklyn; according to
+    Wikipedia, it is New York's most populous borough and the second
+    most densly populated county in the US) in 2012, there was a spike
+    in hate crimes against jews.
+
+4.  All of these findings are corroborated in Hate Crime in New York
+    State 2012 Annual Report:
+    https://www.criminaljustice.ny.gov/crimnet/ojsa/hate-crime-in-nys-2012-annual-report.pdf
+
+# Thank you!!! Questions?
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
