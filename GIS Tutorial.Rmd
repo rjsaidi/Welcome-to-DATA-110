@@ -1,0 +1,377 @@
+---
+title: "GIS Tutorial"
+author: "Rachel Saidi"
+date: "10/20/2020"
+---
+
+
+# This tutorial is based on Computerworld's How to Make a Map with R 
+
+In 10 (fairly) Easy Steps https://www.computerworld.com/article/3038270/data-analytics/create-maps-in-r-in-10-fairly-easy-steps.html by Sharon Machlis sharon_machlis@idg.com
+
+```{r}
+# Set various values needed, including names of files and FIPS codes for New Hampshire and South Carolina
+nhdatafilecsv <- "NHD2016.csv"
+usshapefile <- "cb_2014_us_county_5m/cb_2014_us_county_5m.shp"
+nhfipscode <- "33"
+scdatafile <- "SCGOP2016.csv"
+scfipscode <- "45"
+```
+
+### Run any of the install.packages() commands below for packages that are not yet on your system
+ install.packages("tmap")
+ install.packages("tmaptools")
+ install.packages("leaflet")
+ install.packages("scales")
+ install.packages("leaflet.extras")
+ install.packages("rio")
+ install.packages("htmlwidgets")
+ install.packages("sf")
+ install.packages("dplyr")
+ install.packages("sp")
+
+## Load the tmap, tmaptools, and leaflet packages into your working session:
+ 
+```{r}
+library(tidyverse)
+library(tmap)
+library(tmaptools)
+library(leaflet)
+library(sf)
+library(leaflet.extras)
+library(rio)
+library(sp)
+```
+
+ 
+## Step 1: Read in the NH election results file:
+
+ 
+```{r}
+setwd("C:/Users/rsaidi/Dropbox/Rachel/MontColl/Datasets/GIS")
+nhdata <- import(nhdatafilecsv)
+```
+
+If you have any problems with this, there is also a CSV version of the file -- sometimes reading Excel between Mac and Windows can be tricky. Try
+
+nhdata <- rio::import(nhdatafilecsv)
+
+## Eliminate columns for minor candidates and just use County, Clinton and Sanders columns:
+ 
+```{r}
+nhdata <- nhdata[,c("County", "Clinton", "Sanders")]
+```
+
+## Step 2: Decide what data to map
+
+### Add columns for percents and margins:
+
+```{r}
+nhdata$SandersMarginVotes <- nhdata$Sanders - nhdata$Clinton
+nhdata$SandersPct <- (nhdata$Sanders) / (nhdata$Sanders + nhdata$Clinton) 
+# Will use formatting later to multiply by a hundred
+nhdata$ClintonPct <- (nhdata$Clinton) / (nhdata$Sanders + nhdata$Clinton)
+nhdata$SandersMarginPctgPoints <- nhdata$SandersPct - nhdata$ClintonPct
+```
+
+## Step 3: Get geographic data files
+
+### Read in the shapefile for US states and counties:
+
+* If libraries with raster and rgdal don't work (see next chunk), try library(sf) with the command st_read
+
+* All these options are here and should help you get the qtm command in the next chunk
+
+
+```{r}
+#install.packages("raster")
+#install.packages("rgdal")
+library(raster)
+library(rgdal)
+setwd("C:/Users/rsaidi/Dropbox/Rachel/MontColl/Datasets/GIS")
+usgeo <- shapefile("cb_2014_us_county_5m/cb_2014_us_county_5m.shp")
+```
+
+## Do a quick plot (qtm stands for quick thematic map) of the shapefile and check its structure:
+
+```{r }
+tmap_options(check.and.fix = TRUE)
+qtm(usgeo)
+# (pause to wait for map to render, may take a few seconds)
+```
+
+## Subset just the NH data from the US shapefile
+
+```{r}
+nhgeo <- usgeo[usgeo$STATEFP==nhfipscode,]
+```
+
+## tmap test plot of the New Hampshire data
+
+```{r}
+qtm(nhgeo)
+```
+
+## Match the two dataset variable headers for county (One is NAME and the other is County)
+
+```{r}
+# Check if county names are in the same format in both files
+str(nhgeo$NAME)
+str(nhdata$County)
+nhgeo$NAME  # they are the same
+```
+
+## Order each data set by county name (alphabetically)
+
+```{r message = FALSE}
+nhgeo <- nhgeo[order(nhgeo$NAME),]
+nhdata <- nhdata[order(nhdata$County),]
+if (identical(nhgeo$NAME,nhdata$County)) {
+nhmap <- merge(nhgeo, nhdata, by.x = "NAME", by.y = "County")  # Merge geo and vote datasets
+} else {stop}
+```
+
+## Step 4: Merge geo data with results data using the merge function
+
+```{r}
+# See the new data structure with
+head(nhmap)
+```
+
+
+## Step 5: Create a static map with tmap's qtm() function:
+
+```{r}
+qtm(nhmap, "SandersMarginVotes")
+qtm(nhmap, "SandersMarginPctgPoints")
+```
+
+## For more control over look and feel, use the tm_shape() function:
+
+```{r}
+tm_shape(nhmap) +
+  tm_fill("SandersMarginPctgPoints", title="Sanders Margin, Total Votes", palette = "PRGn") +
+  tm_borders(alpha=.5) +
+  tm_text("NAME", size=0.8)
+```
+
+## Same code as above, but store the static map in a variable, and change the theme to "classic" style:
+
+```{r}
+nhstaticmap <- tm_shape(nhmap) +
+tm_fill("SandersMarginPctgPoints", title="Sanders Margin, Total Votes", palette = "PRGn") + #I like viridis
+tm_borders(alpha=.5) +
+tm_text("NAME", size=0.8) + 
+tm_style("classic")
+```
+
+## View the map
+
+```{r}
+nhstaticmap
+```
+
+
+## Part 6 
+
+Next up: Code for a basic interactive map, this time for Clinton percentages in NH
+
+## Create a palette
+
+```{r}
+clintonPalette <- colorNumeric(palette = "Blues", domain=nhmap$ClintonPct)  # color palette for Clinton
+
+```
+
+## and a pop-up window
+
+
+```{r}
+library(scales)
+nhpopup <- paste0("County: ", nhmap$NAME, "<br /><br /> Sanders:  ", percent(nhmap$SandersPct), " Clinton: ", percent(nhmap$ClintonPct))  # popup content
+```
+
+## Step 7: Now generate the interactive map:
+
+For more information on CRS (coordinate reference systems) projection, see this document:  https://rspatial.org/raster/spatial/6-crs.html
+
+
+```{r}
+# add the appropriate projection, WGS84
+nhmap_projected <- spTransform(nhmap, "+proj=longlat +datum=WGS84")  
+leaflet(nhmap_projected) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addPolygons(stroke=FALSE, 
+              smoothFactor = 0.2, 
+              fillOpacity = .8, 
+              popup=nhpopup,
+              color= ~clintonPalette(nhmap$ClintonPct))
+
+```
+
+## South Carolina data
+
+```{r}
+setwd("C:/Users/rsaidi/Dropbox/Rachel/MontColl/Datasets/GIS")
+scdata <- rio::import(scdatafile)
+```
+
+## South Carolina shapefile and Quick plot of scgeo SC geospatial object:
+
+```{r}
+scgeo <- usgeo[usgeo@data$STATEFP=="45",]
+qtm(scgeo)
+```
+
+
+## Add a column with percent of votes for each candidate. Candidates are in columns 2-7:
+
+
+```{r}
+candidates <- colnames(scdata[2:7])
+for(i in 2:7){
+  j = i + 7
+  temp <- scdata[[i]] / scdata$Total
+  scdata[[j]] <- temp
+  colnames(scdata)[j] <- paste0(colnames(scdata)[i], "Pct")
+}  
+winner <- colnames(scdata[2:7])
+```
+
+## Get winner in each precinct
+
+```{r}
+for(i in 1:nrow(scdata)){
+  scdata$winner[i] <- names(which.max(scdata[i,2:7]))
+}
+```
+
+## Import spreadsheet with percent of adult population holding at least a 4-yr college degree
+
+
+```{r}
+setwd("C:/Users/rsaidi/Dropbox/Rachel/MontColl/Datasets/GIS")
+sced <- rio::import("SCdegree.xlsx")
+```
+
+## Check if county names are in the same format in both files
+
+```{r}
+# Change the county names to plain characters in scgeo:
+scgeo$NAME <- as.character(scgeo$NAME)
+# Order each data set by county name
+scgeo <- scgeo[order(scgeo$NAME),]
+scdata <- scdata[order(scdata$County),]
+# check name and county columns are identical
+if (identical(scgeo$NAME,scdata$County )) {
+scmap <- merge(scgeo, scdata, by.x = "NAME", by.y = "County")
+} else {stop}
+
+str(scgeo$NAME)
+str(scdata$County)
+```
+
+
+## Instead of just coloring the winner, let's color by strength of win with multiple layers
+
+
+```{r}
+# Use same intensity for all - get minimum and maximum for the top 3 combined
+minpct <- min(c(scdata$`Donald J TrumpPct`, scdata$`Marco RubioPct`, scdata$`Ted CruzPct`))
+maxpct <- max(c(scdata$`Donald J TrumpPct`, scdata$`Marco RubioPct`, scdata$`Ted CruzPct`))
+```
+
+## Create leaflet palettes for each layer of the map:
+
+```{r}
+trumpPalette <- colorNumeric(palette = "Purples", domain=c(minpct, maxpct))
+rubioPalette <- colorNumeric(palette = "Reds", domain = c(minpct, maxpct))
+cruzPalette <- colorNumeric(palette = "Oranges", domain = c(minpct, maxpct))
+
+winnerPalette <- colorFactor(palette=c("#984ea3", "#e41a1c"), domain = scmap$winner)
+edPalette <- colorNumeric(palette = "Blues", domain=scmap$PctCollegeDegree)
+```
+
+## Create a pop-up:
+
+```{r}
+scpopup <- paste0("<b>County: ", scmap$NAME, "<br />Winner: ", scmap$winner, "</b><br /><br />Trump: ", percent(scmap$`Donald J TrumpPct`), "<br />Rubio: ", percent(scmap$`Marco RubioPct`), "<br />Cruz: ", percent(scmap$`Ted CruzPct`), "<br /><br />Pct w college ed: ", sced$PctCollegeDegree, "% vs state-wide avg of 25%")
+```
+
+## Add the projection we know from the NH map we'll need for this data on a Leaflet map:
+
+```{r}
+scmap <- sp::spTransform(scmap, "+proj=longlat +datum=WGS84")
+```
+
+## Basic interactive map showing winner in each county:
+
+```{r}
+leaflet(scmap) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addPolygons(stroke=TRUE,
+              weight=1,
+              smoothFactor = 0.2,
+              fillOpacity = .75,
+              popup=scpopup, 
+              color= ~winnerPalette(scmap$winner),
+              group="Winners" ) %>%
+    addLegend(position="bottomleft", colors=c("#984ea3", "#e41a1c"), labels=c("Trump", "Rubio"))
+```
+
+## Put top 3 candidates in their own layers and add education layer, store in scGOPmap2 variable
+
+```{r}
+scGOPmap <- leaflet(scmap) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addPolygons(stroke=TRUE,
+              weight=1,
+              smoothFactor = 0.2,
+              fillOpacity = .75,
+              popup=scpopup, 
+              color= ~winnerPalette(scmap$winner),
+              group="Winners"  ) %>% 
+    addLegend(position="bottomleft", colors=c("#984ea3", "#e41a1c"), labels=c("Trump", "Rubio"))  %>%
+
+  addPolygons(stroke=TRUE,
+     weight=1,
+     smoothFactor = 0.2, 
+     fillOpacity = .75, 
+     popup=scpopup, 
+     color= ~trumpPalette(scmap$`Donald J TrumpPct`),
+     group="Trump") %>%
+
+  addPolygons(stroke=TRUE,
+              weight=1,
+              smoothFactor = 0.2, 
+              fillOpacity = .75, 
+              popup=scpopup, 
+              color= ~rubioPalette(scmap$`Marco RubioPct`),
+              group="Rubio") %>%
+
+  addPolygons(stroke=TRUE,
+              weight=1,
+              smoothFactor = 0.2, 
+              fillOpacity = .75, 
+              popup=scpopup, 
+              color= ~cruzPalette(scmap$`Ted CruzPct`),
+              group="Cruz") %>%
+
+  addPolygons(stroke=TRUE,
+              weight=1,
+              smoothFactor = 0.2, 
+              fillOpacity = .75, 
+              popup=scpopup, 
+              color= ~edPalette(sced$PctCollegeDegree), #this data is in the sced table, not scmaps
+              group="College degs") %>%
+
+  addLayersControl(
+      baseGroups=c("Winners", "Trump", "Rubio", "Cruz", "College degs"),
+      position = "bottomleft",
+      options = layersControlOptions(collapsed = FALSE))
+
+# Now display the map
+scGOPmap
+```
+
+
