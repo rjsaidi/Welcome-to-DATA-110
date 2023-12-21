@@ -77,4 +77,9 @@ This unit will specifically explore more complex visualizations specifically for
 - Use this Quarto document to explore detailed data visualizations using continuous variables and including interactivity:
      - [DS Labs and Highcharter](./DS_Labs_and_Highcharter.rmd)
  
+## Unit 9 - Webscraping 
+This unit will explore the ethics of webscraping and how to scrape appropriate websites.
 
+- Use these notes to get started: [**Unit 9 Notes - Webscraping and Ethics**](./Data110_unit9.pdf)
+
+## Unit 10 - 
