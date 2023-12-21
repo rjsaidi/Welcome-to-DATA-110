@@ -69,6 +69,7 @@ This unit will explore the relationship between two or more variables and the pr
      - [Correlation Scatterplots and Regression](./correlation_scatterplots_and_regression.qmd)
 
 ## Unit 7 - Project 1
+This week you will complete project 1. You will have to search for and choose a dataset that is appropriate for this project. You will get approval from me to use the dataset, and then you will complete the project and present it to the class. 
 
 ## Unit 8 - Continuous Variables in DS Labs and Interactivity with Highcharter
 This unit will specifically explore more complex visualizations specifically for continuous variables; we will also learn to incorporate interactivity using the highcharter package
@@ -76,7 +77,7 @@ This unit will specifically explore more complex visualizations specifically for
 - Use these notes to get started: [**Unit 8 Notes - Continuous Variables with DS Labs and Interactivity with Highcharter**](./Data110_unit8.pdf)
 - Use this Quarto document to explore detailed data visualizations using continuous variables and including interactivity:
      - [DS Labs and Highcharter](./DS_Labs_and_Highcharter.rmd)
-- Use the course datasets to access the **nations** dataset for your homework assignment.
+- You will need the **nations** dataset from the course datasets for your homework assignment.
  
 ## Unit 9 - Webscraping 
 This unit will explore the ethics of webscraping and how to scrape appropriate websites.
@@ -97,5 +98,14 @@ This unit will explore mapping using leaflet and OpenStreetMaps.
 ## Unit 11 - Data Dashboards Using Tableau
 This unit will revisit Tableau Public, but we will dig deeper to create data dashboards.
 
-- Use these notes to get started: [**Unit 11 Notes - Data Dashboards in Tableau**](./)
-- 
+- Use these notes to get started: [**Unit 11 Notes - Data Dashboards in Tableau**](./Data110_unit11.pdf)
+- You will also need to access both the **nations** and **life_exp_long** datasets from the course datasets.
+
+## Unit 12 - Project 2
+This week you will complete project 2. You will have to search for and choose a dataset that is appropriate for this project. You will get approval from me to use the dataset, and then you will complete the project and present it to the class. 
+
+## Unit 13 - Shiny Apps and Data for Good
+This week you will learn about Shiny Apps. You will also use various media to learn more about using data for good.
+
+
+
