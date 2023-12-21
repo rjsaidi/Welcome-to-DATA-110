@@ -36,11 +36,16 @@ Resources that may be used throughout the DATA 110 course
 - Use these notes to get started: [**Unit 3 Notes - Tidyverse, Accessibility, and Reading in Data into R Studio](./Data110_unit3.pdf)
 - Use this Quarto document to learn how to read in data to R Studio in different ways:
      - [Reading in Data in 3 Different Ways](./reading_data_and_accessibility.qmd)
-     - [Hate Crimes NYC Tutorial](./hate_crimes_ny.qmd)
+- Use this Quarto document and the hatecrimes dataset (from the course datasets) to follow the Hate Crimes NY tutorial:
+     - [Hate Crimes NY Tutorial](./hate_crimes_ny.qmd)
 
-## Unit 4 - Data Ethics, P-hacking, Reproducibility, and Data Journalism
+## Unit 4 - Data Ethics, P-Hacking, Reproducibility, and Data Journalism
 
-Unit 4 Materials
+- Use these notes to get started: [**Unit 4 Notes - Data Ethics, P-Hacking, Reproducibility, and Data Journalism**](./Data110_unit4.pdf)
+- Use this Quarto document on data journalism. You will also need to access the pfizer and fda datasets from the course datasets:
+     - [Data Journalism](./data_journalism.qmd)
+- Use this tutorial to learn how to use Tableau Public to explore demographics in Montgomery County
+   - [Montgomery County Tableau Tutorial](./)
 
 ## Unit 5 - Treemaps, Heatmaps, Streamgraphs, and Alluvials
 
