@@ -85,7 +85,7 @@ This unit will explore the ethics of webscraping and how to scrape appropriate w
 ## Unit 10 - GIS
 This unit will explore mapping using leaflet and OpenStreetMaps.
 
-- Use these notes to get started: [**Unit 10 Notes - GIS**](./(Data110_unit10.pdf)
+- Use these notes to get started: [**Unit 10 Notes - GIS**](./Data110_unit10.pdf)
 - Use this Quarto document to follow the tutorial to plot Japan earthquakes using leaflet and OpenStreetMaps:
-     - [GIS and Japan Earthquakes Tutorial](./(japan_earthquakes_geo_tutorial.qmd)
+     - [GIS and Japan Earthquakes Tutorial](./japan_earthquakes_geo_tutorial.qmd)
      - 
