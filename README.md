@@ -51,9 +51,9 @@ Resources that may be used throughout the DATA 110 course
 
 - Use these notes to get started: [**Unit 4 Notes - Treemaps, Heatmaps, Streamgraphs, and Alluvials**](./Data110_unit5.pdf)
 - Use this Quarto document on treemaps, heatmaps, streamgraphs, and alluvials:
-     - [Treemaps Heatmaps Streamgraphs and Alluvials](./(heatmap_treemap_streamgraph_alluvial.qmd)
+     - [Treemaps Heatmaps Streamgraphs and Alluvials](./heatmap_treemap_streamgraph_alluvial.qmd)
 - This is the revealjs version of the same notes:
-     - [Treemaps Heatmaps Streamgraphs and Alluvials](./heatmap_treemap_streamgraph_alluvial_revealjs.qmd)
+     - [Treemaps Heatmaps Streamgraphs and Alluvials Revealjs](./heatmap_treemap_streamgraph_alluvial_revealjs.qmd)
 
 ## Unit 6 - Scatterplots, Correlation, and Linear Models
 
