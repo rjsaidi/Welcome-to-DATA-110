@@ -49,7 +49,7 @@ Resources that may be used throughout the DATA 110 course
 
 ## Unit 5 - Treemaps, Heatmaps, Streamgraphs, and Alluvials
 
-Unit 5 Materials
+- Use these notes to get started: [**Unit 4 Notes - Treemaps, Heatmaps, Streamgraphs, and Alluvials](./)
 
 ## Unit 6 - Scatterplots, Correlation, and Linear Models
 
