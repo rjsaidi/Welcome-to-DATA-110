@@ -1,0 +1,426 @@
+---
+title: "Correlation, Scatterplots, and Regression Analysis"
+author: "Rachel Saidi"
+date: "2/25/2023"
+format: html
+---
+
+# Create a Scatterplot
+
+In this example, look at US crime rates at the state level, in 2005, with rates per 100,000 population for crime types such as murder, robbery, and aggravated assault, as reported by the Census Bureau. There are 7 crime types in total. The dataset is clean to begin with.
+
+
+```{r}
+library(tidyverse)
+library(ggfortify)
+library(plotly)
+crime <- read_csv('http://datasets.flowingdata.com/crimeRatesByState2005.csv')
+# source: U.S. Census Bureau and Nathan Yau
+```
+
+## Check out the first few lines
+
+```{r pressure, echo=FALSE}
+head(crime)
+```
+
+
+## Notice
+
+The data has a column for the state and then the rest are rates for various crimes. Now make a quick scatterplot.
+
+## Map variables in the data onto the X and Y axes and change the axes labels and theme
+
+
+The default gray theme of ggplot2 has a rather academic look. See here and here for how to use the theme option to customize individual elements of a chart. Use one of the ggplot2 built-in themes, and then customize the fonts.
+
+```{r}
+ggplot(crime, aes(x = burglary, y = murder)) +
+  xlab("Burglary rates in each state per 100,000") +
+  ylab("Murder rates in each state per 100,000") + 
+  theme_minimal(base_size = 12) # Change the theme
+```
+
+
+```{r}
+p1 <- ggplot(crime, aes(x = burglary, y = murder)) +
+  labs(title = "MURDERS VERSUS BURGLARIES IN US STATES PER 100,000",
+  caption = "Source: U.S. Census Bureau and Nathan Yau") +
+  xlab("Burglary rates in each state per 100,000") +
+  ylab ("Murder rates in each state per 100,000") +
+  theme_minimal(base_size = 12)
+p1 + geom_point() # add the points
+```
+
+## What is going on with the outlier?
+
+The one point far higher than the rest represents Washington, D.C., which had a much higher murder rate of 35.4. The states with the next highest murder rate at that time were Louisiana and Maryland at 9.9 per 100,000.
+
+Remove D.C. and US averages and replot:
+
+```{r}
+crime2 <- crime[crime$state != "District of Columbia",]
+crime2 <- crime2[crime2$state != "United States",]
+p2 <- ggplot(crime2, aes(x = burglary, y = murder)) +
+  labs(title = "MURDERS VERSUS BURGLARIES IN US STATES PER 100,000",
+  caption = "Source: U.S. Census Bureau and Nathan Yau") +
+  xlab("Burglary rates in each state per 100,000") +
+  ylab ("Murder rates in each state per 100,000") +
+  theme_minimal(base_size = 12)
+p2 + geom_point()
+```
+
+
+## Now the scatterplot appears to show a correlation
+
+Fix the axes to start at 0.
+
+```{r}
+p3 <- p2 + geom_point() + xlim(250,1200)+ ylim(0,10)
+p3
+```
+
+
+## Add a smoother in red with a confidence interval
+
+```{r}
+p4 <- p3 + geom_smooth(color = "red")
+p4
+```
+
+
+## Add a linear regression with confidence interval
+
+```{r}
+p5 <- p3 + geom_smooth(method='lm',formula=y~x)
+p5
+```
+
+
+## Add a title, make the line dashed, and remove the confidence interval band
+
+The command   se = FALSE takes away the CI band
+
+```{r}
+p6 <- p3 + geom_smooth(method='lm',formula=y~x, se = FALSE, linetype= "dotdash", size = 0.3) +
+  ggtitle("BURGLARIES VERSUS MURDERS IN THE U.S.")
+p6  
+```
+
+
+## What is the linear equation of that linear regression model?
+
+In the form, y=mx + b, we use the command, lm(y~x), meaning, fit the predictor variable x into the model to predict y. Look at the values of  (Intercept) and  murder. The column,  Estimate gives the value you need in your linear model. The column for   Pr(>|t|)  p-value and is the  describes whether the predictor is useful to the model. The more asterisks, the more the variable contributes to the model.  
+
+```{r}
+cor(crime2$burglary, crime2$murder)
+fit1 <- lm(murder ~ burglary, data = crime2)
+summary(fit1)
+```
+
+## What does the output mean?
+
+Cor stands for "correlation". This is a value between (inclusively) -1 and 1. The correlation coefficient tells how strong or weak the correlation is. Values closer to +/- 1 are strong correlation (the sign is determined by the linear slope), values close to +/- 0.5 are weak correlation, and values close to zero have no correlation. 
+
+The model has the equation:     murder = 0.0062(burglary) + 0.396     
+
+The slope may be interpreted in the following:
+For each additional burglary per 100,000, there is a predicted increase of 0.006 murders.
+
+The p-value on the right of burglary has 3 asterisks which suggests it is a meaningful variable to explain the linear increase in murders. But we also need to look at the  Adjusted R-Squared value. It states that about 38% of the variation in the observations may be explained by the model. In other words, 62% of the variation in the data is likely not explained by this model. 
+
+
+## What about more variables?
+
+Can a model with more predictors also be used? What would we be trying to predict? 
+
+## Is there an easier way to compare multiple variables using a scatterplot matrix?
+
+Check out the pairwise comparisons with density curves and correlation output
+
+
+```{r message = FALSE}
+library(GGally)
+ggpairs(crime2, columns = 3:8)  # only include predictor variables in the matrix
+```
+
+
+
+## Another method: Use a correlation plot to explore the correlation among all variables
+
+This correlation plot shows similar pairwise results as above, but in a heatmap of correlation values.
+
+
+```{r}
+#install.packages("DataExplorer")
+library(DataExplorer)
+plot_correlation(crime2)
+```
+
+## A third option to explore correlations using library(psych)
+
+```{r}
+library(psych)
+pairs.panels(crime2[3:8],   # plot distributions and correlations for all the data
+             gap = 0,
+             pch = 21,
+             lm = TRUE)
+```
+
+
+
+## Collinearity
+
+The key goal of multiple regression analysis is to isolate the relationship between EACH INDEPENDENT VARIABLE and the DEPENDENT VARIABLE.
+
+COLLINEARITY means explanatory variables are correlated and thus NOT INDEPENDENT. The more correlated the variables, the more difficult it is to change one variable without changing the other. This is important to keep in mind. The two different matrices gave slightly different correlation information. We are concerned with dependence of 2 or more variables. 
+
+The two variables with the highest correlation of 0.68 or 0.69 are burglary and larceny_theft. 
+
+
+## Now try to make a multiple regression model. 
+
+With multiple regression, there are several strategies for comparing variable inputs into a model. I will show you backward elimination. In backward elimination, start with all possible predictor variables with your response variable. In this case, we will use: burglary  forcible_rape  aggravated_assault  larceny_theft  motor_vehicle_theft
+Perform a model fit with all predictors. 
+
+1.	Look at the p-value for each variable - if it is relatively small ( < 0.10), then it is likely contributing to the model. 
+
+2.	Check out the residual plots. A good model will have a relatively straight horizontal red line across the scatterplot between residuals plotted with fitted values (see below for a good residuals plot). You can also look at the other plots (Normal QQ, Scale-Location, and Residuals vs Leverage), but for now we will focus on the residual vs. fitted plot. The more curved the red line, the more likely that a better model exists.
+
+3.	Look at the output for the Adjusted R-Squared value at the bottom of the output. The interpretation is:  
+
+__% (from the adjusted r-squared value) of the variation in the observations may be explained by this model. The higher the adjusted R-squared value, the better the model. We use the adjusted  R-squared value because it compensates for more predictors mathematically increasing the normal R-squared value. 
+
+
+```{r}
+fit2 <- lm(murder ~ robbery + burglary + forcible_rape + aggravated_assault + larceny_theft + motor_vehicle_theft, data = crime2)
+summary(fit2)
+autoplot(fit2, 1:4, nrow=2, ncol=2)
+```
+
+## What does these diagnostic plots mean?
+
+1. Residual plot essentiall indicates whether a linear model is appropriate - you can see this by the blue line showing relatively horizontal. If it is not relatively horizontal, a linear plot may not be appropriate.
+
+2. QQPlot indicates whether the distribution is relatively normal. Observations that might be outliers are indicated by their row number.
+
+3. Scale-Location indicates homogeneous variance (homeoscedacity). Influential observations that are skewing the variance distribution are indicated.
+
+4. Cook's Distance indicates which outliers have high leverage, meaning that some outliers may not cause the model to violate basic assumptions required for the regression analysis (see #1-3). If outliers have high leverage, then they may be causing problems for your model. You can try to remove those observations, especially if they appear in any of the other 3 plots above.
+
+
+## What are we really trying to predict?
+
+If we are trying to predict murder rates, then we can see if any of the predictor variables contribute to this model. Note the adjusted R-squared value is 68.01% The only variable that does not appear to be as significant as the others is motor_vehicle_theft. So drop that and re-run the model.
+
+
+```{r}
+fit3 <- lm(murder ~ robbery + burglary + forcible_rape + aggravated_assault + larceny_theft, data = crime2)
+summary(fit3)
+autoplot(fit3, 1:4, nrow=2, ncol=2)
+```
+
+Drop motor_vehicle_theft - the adjusted R-squared value improved slightly to 68.7%. 
+
+Maybe try removing forcible rape since it had a large p-value of 0.51. Don't forget to check the diagnostic plots.
+
+
+```{r}
+fit4 <- lm(murder ~ robbery + burglary + aggravated_assault + larceny_theft, data = crime2)
+summary(fit4)
+autoplot(fit4, 1:4, nrow=2, ncol=2)
+```
+
+## Interesting!!
+
+The adjusted R-squared went up to 69.1%. The residuals plot looks about the same.
+
+One final model - the simplest (parsimonious) by removing larceny_theft.
+
+```{r}
+fit5 <- lm(murder ~ robbery + burglary + aggravated_assault, data = crime2)
+summary(fit5)
+autoplot(fit5, 1:4, nrow=2, ncol=2)
+```
+
+
+
+The residuals plot shows observations 24 and 18 have an effect on the residuals plot as well having high scale-location values.
+
+Mississippi is 24
+Louisiana is 18
+
+## Try the last model, but remove those 2 observations:
+
+```{r}
+crime3 <- crime2[-c(18,24),]
+fit6 <- lm(murder ~ robbery + burglary + aggravated_assault, data = crime3)
+summary(fit6)
+autoplot(fit6, 1:4, nrow=2, ncol=2)
+```
+
+*The adjusted R^2 went up to about 73%, which is an improvement. The residuals plot does not seem to have improved.*
+
+## One last attempt - we can compare the last  models to see if removing larceny_theft is an improvement on the model using ANOVA
+
+ANOVA (analysis of variance) compares 2 models, one simpler than the other. If the result is a small p-value, then the larger model is better than the smaller model
+
+```{r}
+anova(fit5, fit4)
+```
+
+*We can see that the p-value is large, so there is no compelling evidence that larceny_theft contributes significantly to the model.*
+
+
+
+## Back to simply murders and burglaries - bring in the state's population as a size of the circle
+
+```{r}
+options(scipen = 999)
+p2 +
+  geom_point(aes(size = population), color = "red") + xlim(250,1200) + ylim(0,10) +
+  labs(title = "MURDERS VERSUS BURGLARIES IN US STATES PER 100,000",
+  caption = "Source: U.S. Census Bureau and Nathan Yau") +
+  xlab("Burglary rates in each state per 100,000") +
+  ylab ("Murder rates in each state per 100,000") +
+  theme_minimal(base_size = 12)
+```
+
+## Finally, add some interactivity to the plot with plotly
+
+```{r}
+p <- ggplot(crime2, aes(x = burglary, y = murder, size = population, text = paste("state:", state))) + 
+     geom_point(alpha = 0.5, color = "red") + xlim(250,1200) + ylim(0,10) + 
+  ggtitle("BURGLARIES VERSUS MURDERS IN THE U.S.", subtitle = "Sizes of circles are proportional to state populations") +
+  xlab("Burglary rates in each state per 100,000") +
+  ylab ("Murder rates in each state per 100,000") +
+  theme_minimal(base_size = 12)
+p <- ggplotly(p)
+p
+```
+
+## Make a series of charts from food stamps data
+
+Now we will explore a series of other geom functions using the food stamps data.
+
+## Load the data, map variables onto the X and Y axes, and save chart template
+
+```{r}
+# load data
+food_stamps <- read_csv("food_stamps.csv")
+
+# save basic chart template
+food_stamps_chart <- ggplot(food_stamps, aes(x = year, y = participants)) + 
+  labs(title = "Food Stamps Participation Over the Years") +
+       xlab("Year") +
+       ylab("Participants (millions)") +
+  theme_minimal(base_size = 14)
+food_stamps_chart
+
+```
+
+## Make a line chart
+
+```{r}
+food_stamps_chart +  
+  geom_line()
+```
+
+## Customize the line, and add a title
+
+```{r}
+food_stamps_chart +
+  geom_line(size = 1.5, color = "red") +
+  ggtitle("Line chart")
+
+```
+
+## Add a second layer to make a dot-and-line chart
+
+```{r}
+food_stamps_chart +
+  geom_line() +
+  geom_point() +
+  ggtitle("Dot-and-line chart")
+```
+
+## Make a column chart, then flip its coordinates to make a bar chart
+
+```{r}
+# Make a column chart
+food_stamps_chart +
+  geom_bar(stat = "identity") +
+  ggtitle("Column chart") +
+  theme(panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank())
+```
+
+geom_bar works a little differently to the geoms we have considered previously. If you have not mapped data values to the Y axis with aes, its default behavior is to set the heights of the bars by counting the number of records for values along the X axis. If you have mapped a variable to the Y axis, and want the heights of the bars to represent values in the data, use you must use stat="identity".
+
+## coord_flip switches the X and Y axes.
+
+```{r}
+# Make a bar chart
+food_stamps_chart +
+  geom_bar(stat = "identity") +
+  ggtitle("Bar chart") +
+  theme(panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank()) +
+  coord_flip()
+```
+
+## The difference between color and fill
+
+For some geoms, notably geom_bar, you can set color for their outline as well as the interior of the shape.
+
+When setting colors, color refers to the outline, fill to the interior of the shape.
+
+```{r}
+# set color and fill
+food_stamps_chart +
+  geom_bar(stat = "identity", color = "#888888", fill = "#CCCCCC", alpha = 0.5) +
+  ggtitle("Column chart")
+```
+
+## Map color to the values of a continuous variable
+
+```{r}
+# fill the bars according to values for the cost of the program
+food_stamps_chart +
+  geom_bar(stat = "identity", color= "white", aes(fill = costs))
+```
+
+This code uses an aes mapping to color the bars according values for the costs of the program, in billions of dollars. ggplot2 recognizes that costs is a continuous variable, but its default sequential scheme applies more intense blues to lower values, which is counterintuitive.
+
+## Use a ColorBrewer sequential color palette
+
+```{r}
+# use a colorbrewer gradient levels for intensity
+food_stamps_chart +
+  geom_bar(stat = "identity", color = "#888888", aes(fill = costs)) +
+  scale_fill_gradient(name = "Cost\n($ billion", low = "#d1dee8", high = "#d92774")
+```
+
+scale_fill_distiller (and scale_color_distiller) work like scale_color_brewer, but set color gradients for ColorBrewer's sequential and diverging color palettes; direction = 1 ensures that larger numbers are mapped to more intense colors (direction = -1 reverses the color mapping). Try changing the code I have:  scale_fill_gradient() to scale_fill_distiller with different directions (1 or -1).
+
+```{r}
+food_stamps_chart +
+  geom_bar(stat = "identity", color = "#888888", aes(fill = costs)) +
+  scale_fill_distiller(name = "Cost\n($ billion)", palette = "Reds", direction = 1)
+```
+
+
+Notice also the \n in the title for the legend. This introduces a new line.
+
+## Control the position of the legend
+
+This code uses the theme function to moves the legend from its default position to the right of the chart to use some empty space on the chart itself.
+
+```{r}
+food_stamps_chart +
+  geom_bar(stat="identity", color = "#888888", aes(fill=costs)) +
+  scale_fill_gradient(name = "Cost\n($ billion", low = "#d1dee8", high = "#d92774") +
+  theme(legend.position=c(0.15,0.7))
+```
+
+The coordinates for the legend are given as a list: The first number sets the horizontal position, from left to right, on a scale from 0 to 1; the second number sets the vertical position, from bottom to top, again on a scale from 0 to 1.
