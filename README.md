@@ -19,6 +19,8 @@ Resources that may be used throughout the DATA 110 course
 8. Hadly Wickham's "how to" text for Data Analysts is R for Data Science 2e: https://r4ds.hadley.nz/
 
 ## Unit 1 - Intro to Data Visualization
+This is our introduction to data visualization. Let's get started!
+
 - Use these notes to get started:     [**Unit 1 Notes - Intro to Data Visualization and R Studio**](./Data110_unit1.pdf)
 - Here is your first Quarto document. You will learn how to create bar charts using the pre-built Diamonds dataset:
      - [Bar Charts with Diamonds Dataset](./bar_charts_with_diamonds.qmd)
@@ -26,12 +28,14 @@ Resources that may be used throughout the DATA 110 course
      - [Bar Charts with Diamonds Slides](./bar_charts_with_diamonds_dataset.pptx)
 
 ## Unit 2 - Using Github and Handling Data
+In this unit, you will learn about the basics of github, and you will learn how to start creating plots using ggplot.
 
 - Use these notes to get started:  [**Unit 2 Notes - Using Github and Handling Data**](./Data110_unit2.pdf)
 - Use this Quarto document for your first coding assignment using the pre-built Airquality dataset:
      - [Airquality HW](./Airquality_HW.qmd)
 
 ## Unit 3 - Reading in Data in 3 Different Ways
+In this unit, we will learn to read in data in 3 different ways. We will also learn to pivot from wide to long format to create facet plots.
 
 - Use these notes to get started: [**Unit 3 Notes - Tidyverse, Accessibility, and Reading in Data into R Studio**](./Data110_unit3.pdf)
 - Use this Quarto document to learn how to read in data to R Studio in different ways:
@@ -40,6 +44,7 @@ Resources that may be used throughout the DATA 110 course
      - [Hate Crimes NY Tutorial](./hate_crimes_ny.qmd)
 
 ## Unit 4 - Data Ethics, P-Hacking, Reproducibility, and Data Journalism
+This unit will dig deep into data ethics and the reproducibility crisis.
 
 - Use these notes to get started: [**Unit 4 Notes - Data Ethics, P-Hacking, Reproducibility, and Data Journalism**](./Data110_unit4.pdf)
 - Use this Quarto document on data journalism. You will also need to access the pfizer and fda datasets from the course datasets:
@@ -48,6 +53,7 @@ Resources that may be used throughout the DATA 110 course
    - [Montgomery County Tableau Tutorial](./MoCo_High_School_Tableau_Tutorial.pdf)
 
 ## Unit 5 - Treemaps, Heatmaps, Streamgraphs, and Alluvials
+This unit will explore more complex data visualizations beyond bar graphs, histograms, and scatterplots.
 
 - Use these notes to get started: [**Unit 4 Notes - Treemaps, Heatmaps, Streamgraphs, and Alluvials**](./Data110_unit5.pdf)
 - Use this Quarto document on treemaps, heatmaps, streamgraphs, and alluvials:
@@ -56,6 +62,7 @@ Resources that may be used throughout the DATA 110 course
      - [Treemaps Heatmaps Streamgraphs and Alluvials Revealjs](./heatmap_treemap_streamgraph_alluvial_revealjs.qmd)
 
 ## Unit 6 - Scatterplots, Correlation, and Linear Models
+This unit will explore the relationship between two or more variables and the process of model building.
 
 - Use these notes to get started: [**Unit 6 Notes - Scatterplots, Correlation, and Linear Models**](./Data110_unit6.pdf)
 - Use this Quarto document on scatterplots, correlation, and linear models (and interactivity with plotly):
@@ -64,5 +71,10 @@ Resources that may be used throughout the DATA 110 course
 ## Unit 7 - Project 1
 
 ## Unit 8 - Continuous Variables in DS Labs and Interactivity with Highcharter
+This unit will specifically explore more complex visualizations specifically for continuous variables; we will also learn to incorporate interactivity using the highcharter package
 
-Unit 8 Materials
+- Use these notes to get started: [**Unit 8 Notes - Continuous Variables with DS Labs and Interactivity with Highcharter**](./Data110_unit8.pdf)
+- Use this Quarto document to explore detailed data visualizations using continuous variables and including interactivity:
+     - [DS Labs and Highcharter](./DS_Labs_and_Highcharter.rmd)
+ 
+
