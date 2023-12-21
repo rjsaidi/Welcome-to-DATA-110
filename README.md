@@ -57,7 +57,9 @@ Resources that may be used throughout the DATA 110 course
 
 ## Unit 6 - Scatterplots, Correlation, and Linear Models
 
-Unit 6 Materials
+- Use these notes to get started: [**Unit 6 Notes - Scatterplots, Correlation, and Linear Models**](./Data110_unit6.pdf)
+- Use this Quarto document on scatterplots, correlation, and linear models (and interactivity with plotly):
+     - [Correlation Scatterplots and Regression](./correlation_scatterplots_and_regression.qmd)
 
 ## Unit 7 - Project 1
 
