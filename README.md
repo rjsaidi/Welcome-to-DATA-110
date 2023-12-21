@@ -94,4 +94,8 @@ This unit will explore mapping using leaflet and OpenStreetMaps.
 - This is an old tutorial on GIS that allows mapping with multiple layers:
      - [GIS Tutorial](./GIS_Tutorial.rmd)
  
+## Unit 11 - Data Dashboards Using Tableau
+This unit will revisit Tableau Public, but we will dig deeper to create data dashboards.
 
+- Use these notes to get started: [**Unit 11 Notes - Data Dashboards in Tableau**](./)
+- 
