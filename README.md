@@ -76,6 +76,7 @@ This unit will specifically explore more complex visualizations specifically for
 - Use these notes to get started: [**Unit 8 Notes - Continuous Variables with DS Labs and Interactivity with Highcharter**](./Data110_unit8.pdf)
 - Use this Quarto document to explore detailed data visualizations using continuous variables and including interactivity:
      - [DS Labs and Highcharter](./DS_Labs_and_Highcharter.rmd)
+- Use the course datasets to access the **nations** dataset for your homework assignment.
  
 ## Unit 9 - Webscraping 
 This unit will explore the ethics of webscraping and how to scrape appropriate websites.
