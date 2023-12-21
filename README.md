@@ -33,7 +33,7 @@ Resources that may be used throughout the DATA 110 course
 
 ## Unit 3 - Reading in Data in 3 Different Ways
 
-- Use these notes to get started: [**Unit 3 Notes - Tidyverse, Accessibility, and Reading in Data into R Studio](./Data110_unit3.pdf)
+- Use these notes to get started: [**Unit 3 Notes - Tidyverse, Accessibility, and Reading in Data into R Studio**](./Data110_unit3.pdf)
 - Use this Quarto document to learn how to read in data to R Studio in different ways:
      - [Reading in Data in 3 Different Ways](./reading_data_and_accessibility.qmd)
 - Use this Quarto document and the hatecrimes dataset (from the course datasets) to follow the Hate Crimes NY tutorial:
@@ -49,7 +49,11 @@ Resources that may be used throughout the DATA 110 course
 
 ## Unit 5 - Treemaps, Heatmaps, Streamgraphs, and Alluvials
 
-- Use these notes to get started: [**Unit 4 Notes - Treemaps, Heatmaps, Streamgraphs, and Alluvials](./)
+- Use these notes to get started: [**Unit 4 Notes - Treemaps, Heatmaps, Streamgraphs, and Alluvials**](./Data110_unit5.pdf)
+- Use this Quarto document on treemaps, heatmaps, streamgraphs, and alluvials:
+     - [Treemaps Heatmaps Streamgraphs and Alluvials](./(heatmap_treemap_streamgraph_alluvial.qmd)
+- This is the revealjs version of the same notes:
+     - [Treemaps Heatmaps Streamgraphs and Alluvials](./heatmap_treemap_streamgraph_alluvial_revealjs.qmd)
 
 ## Unit 6 - Scatterplots, Correlation, and Linear Models
 
