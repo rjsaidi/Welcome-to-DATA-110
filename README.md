@@ -45,7 +45,7 @@ Resources that may be used throughout the DATA 110 course
 - Use this Quarto document on data journalism. You will also need to access the pfizer and fda datasets from the course datasets:
      - [Data Journalism](./data_journalism.qmd)
 - Use this tutorial to learn how to use Tableau Public to explore demographics in Montgomery County
-   - [Montgomery County Tableau Tutorial](./)
+   - [Montgomery County Tableau Tutorial](./MoCo_High_School_Tableau_Tutorial.pdf)
 
 ## Unit 5 - Treemaps, Heatmaps, Streamgraphs, and Alluvials
 
