@@ -12,11 +12,11 @@ Resources that may be used throughout the DATA 110 course
 4. DATA 110 Articles on Reproducibility, Elevator Pitches, and Data for Good:
    - https://drive.google.com/drive/folders/1vR4Ay9FrpDd-A2jEgWdIbhimgluz-VzQ?usp=sharing
 
-6. Links for Installing R and R Studio
+5. Links for Installing R and R Studio
    - Installing R: https://cran.r-project.org/
    - Installing R Studio: https://posit.co/download/rstudio-desktop/
 
-8. Hadly Wickham's "how to" text for Data Analysts is R for Data Science 2e: https://r4ds.hadley.nz/
+6. Hadly Wickham's "how to" text for Data Analysts is R for Data Science 2e: https://r4ds.hadley.nz/
 
 ## Unit 1 - Intro to Data Visualization
 This is our introduction to data visualization. Let's get started!
