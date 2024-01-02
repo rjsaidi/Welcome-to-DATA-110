@@ -107,5 +107,6 @@ This week you will complete project 2. You will have to search for and choose a 
 ## Unit 13 - Shiny Apps and Data for Good
 This week you will learn about Shiny Apps. You will also use various media to learn more about using data for good.
 
+- Use these notes to get started learning about shiny apps: [**Unit 13 Notes - Intro to Shiny Apps**](./Data110_unit13_shinyapps.pdf)
 
 
