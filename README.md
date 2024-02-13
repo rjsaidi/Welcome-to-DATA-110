@@ -41,7 +41,7 @@ In this unit, we will learn to read in data in 3 different ways. We will also le
 - Use this Quarto document to learn how to read in data to R Studio in different ways:
      - [Reading in Data in 3 Different Ways](./reading_data_and_accessibility.qmd)
 - Use this Quarto document and the hatecrimes dataset (from the course datasets) to follow the Hate Crimes NY tutorial:
-     - [Hate Crimes NY Tutorial](./hate_crimes_ny.qmd)
+     - https://rpubs.com/rsaidi/1000514
 
 ## Unit 4 - Data Ethics, P-Hacking, Reproducibility, and Data Journalism
 This unit will dig deep into data ethics and the reproducibility crisis.
