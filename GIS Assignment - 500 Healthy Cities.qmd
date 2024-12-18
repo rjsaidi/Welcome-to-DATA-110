@@ -1,0 +1,104 @@
+---
+title: "Healthy Cities GIS Assignment"
+author: "Your Name"
+format: html
+editor: visual
+---
+
+## Load the libraries and set the working directory
+
+```{r}
+#| message: false
+#| warning: false
+library(tidyverse)
+library(tidyr)
+setwd("C:/Users/rsaidi/Dropbox/Rachel/MontColl/Datasets/Datasets")
+cities500 <- read_csv("500CitiesLocalHealthIndicators.cdc.csv")
+data(cities500)
+```
+
+## The GeoLocation variable has (lat, long) format
+
+Split GeoLocation (lat, long) into two columns: lat and long
+
+```{r}
+latlong <- cities500|>
+  mutate(GeoLocation = str_replace_all(GeoLocation, "[()]", ""))|>
+  separate(GeoLocation, into = c("lat", "long"), sep = ",", convert = TRUE)
+head(latlong)
+```
+
+## Filter the dataset
+
+Remove the StateDesc that includes the United Sates, select **Prevention** as the category (of interest), filter for only measuring **crude prevalence** and select only **2017**.
+
+```{r}
+latlong_clean <- latlong |>
+  filter(StateDesc != "United States") |>
+  filter(Data_Value_Type == "Crude prevalence") |>
+  filter(Year == 2017)
+head(latlong_clean)
+```
+
+## What variables are included? (can any of them be removed?)
+
+```{r}
+names(latlong_clean)
+```
+
+## Remove the variables that will not be used in the assignment
+
+```{r}
+latlong_clean2 <- latlong_clean |>
+  select(-DataSource,-Data_Value_Unit, -DataValueTypeID, -Low_Confidence_Limit, -High_Confidence_Limit, -Data_Value_Footnote_Symbol, -Data_Value_Footnote)
+head(latlong_clean2)
+
+```
+
+```{r}
+unique(md$CityName)
+```
+
+The new dataset "Prevention" is a manageable dataset now.
+
+# For your assignment, work with a cleaned dataset.
+
+### 1. Once you run the above code, filter this dataset one more time for any particular subset **with no more than 900 observations.**
+
+Filter chunk here
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+### 2. Based on the GIS tutorial (Japan earthquakes), create one plot about something in your subsetted dataset.
+
+First plot chunk here
+
+```{r}
+
+```
+
+### 3. Now create a map of your subsetted dataset.
+
+First map chunk here
+
+```{r}
+
+```
+
+### 4. Refine your map to include a mouse-click tooltip
+
+Refined map chunk here
+
+```{r}
+
+```
+
+### 5. Write a paragraph
+
+In a paragraph, describe the plots you created and what they show.

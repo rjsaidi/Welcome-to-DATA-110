@@ -1,0 +1,215 @@
+---
+title: "Webscraping 2019 IMDB Movies Tutorial"
+author: "R Saidi"
+format: docx
+editor: visual
+---
+
+## Install necessary packages for this project
+
+```{r warning = FALSE, message = FALSE}
+#install.packages('rvest')
+#Loading the rvest package
+library(rvest)
+library(tidyverse)
+```
+
+## Scrape the IMDB website to create a dataframe of information from 2019 top 100 movies
+
+### Use the following URL from IMBD movies of 2019
+
+https://www.imdb.com/search/title/?title_type=feature&release_date=2019-01-01,2019-12-31&count=100
+
+```{r}
+#Specifying the url for desired website to be scraped
+url <- 'https://www.imdb.com/search/title/?title_type=feature&release_date=2019-01-01,2019-12-31&count=100'
+
+#Reading the HTML code from the website
+webpage <- read_html(url)
+# save_url(webpage, filename="webpage.html")
+```
+
+## Load various elements and clean data using gsub.
+
+## Scrape for Movie Rank Information
+
+Use the command, length, to ensure that each list contains 100 elements or NAs for missing data to sum to 25 elements.
+
+```{r}
+#Use CSS selectors to scrape the rankings section
+rank_title_html <- html_elements(webpage, css='.ipc-title__text')
+head(rank_title_html)
+```
+
+```{r}
+#Convert the ranking data to text
+rank_title <- html_text(rank_title_html)
+
+#Remove the first and last rows - they are not movie titles
+rank_title_data <- rank_title[-c(1,27)]
+
+#Let's have a look at the rankings
+tail(rank_title_data)
+
+# notice that the format is "rank. title"
+length(rank_title_data)
+#should be 25
+```
+
+## Scrape for Rank Information from the rank_title information
+
+```{r}
+# remove the title and extract just the number
+rank_data <- parse_number(rank_title_data)
+summary(rank_data)
+```
+
+## Scrape for Title Information
+
+```{r}
+# Use the rank_title_data and extract just the characters from the title
+title_data <- str_sub(rank_title_data, start = 4L, end = -1L)
+
+head(title_data)      #check first 6 titles
+
+length(title_data)     # check number of titles - should be 25
+```
+
+## Scrape for Movie Description Information
+
+```{r}
+#Use CSS selectors to scrape the description section
+description_data_html <- html_elements(webpage, css='.ipc-html-content-inner-div')
+
+#Convert the description data to text
+description_data <- html_text(description_data_html)
+
+#Let's have a look at the description data
+head(description_data)
+
+
+#What is the length of this vector for description data 
+length(description_data)
+#It should be 25
+```
+
+## Scrape for details information
+
+span.sc-5bc66c50-6.OOdsw.dli-title-metadata-item
+
+```{r}
+#Use CSS selectors to scrape the Movie runtime 
+details_data_html <- html_elements(webpage, css = 'span.sc-5bc66c50-6.OOdsw.dli-title-metadata-item')
+
+#Convert the description data to text
+details_data <- html_text(details_data_html)
+head(details_data)
+```
+
+## Details include year, runtime, and rating
+
+## Filter just for the runtime
+
+```{r}
+# Filter out the movie runtimes in the form "Xh XXm" from details_data
+runtime_text <- details_data[grep("\\d+h", details_data)]
+head(runtime_text)
+```
+
+## Convert runtime_text from hours and minutes to minutes
+
+```{r}
+# Convert runtime_text from hours and minutes to minutes
+converted_runtimes <- sapply(strsplit(runtime_text, "h |m"), function(x) as.numeric(x[1]) * 60 + as.numeric(x[2]))
+
+# Display the converted movie runtimes
+head(converted_runtimes)
+length(converted_runtimes)
+summary(converted_runtimes)
+```
+
+## Check to make sure movies match with runtimes with a temporary data frame
+
+```{r}
+# Display the titles of movies with missing runtimes and their corresponding runtimes
+df_1 <- data.frame(Title = title_data, Runtime = converted_runtimes)
+head(df_1)
+```
+
+## Scrape for Voting Information
+
+```{r}
+# Use CSS selectors to scrape the number of votes
+votes_labels <- html_nodes(webpage, css = "span.ipc-rating-star--voteCount")
+vote_text <- html_text(votes_labels)
+head(vote_text)
+```
+
+## Clean votes character strings
+
+Remove parenthesis around vote_text
+
+```{r}
+vote_text <- str_replace_all(vote_text, "[()]", "")
+vote_text <- str_replace_all(vote_text, " ", "")
+head(vote_text)
+```
+
+## Combine all the lists to form a data frame
+
+```{r}
+# Display the movies with missing or invalid runtimes
+df_movies <- data.frame(rank = rank_data, title = title_data, description = description_data, runtime = converted_runtimes, votes = vote_text)
+head(df_movies)
+```
+
+## Convert M and K number of votes
+
+M stands for millions K stands for thousands
+
+```{r}
+df2 <- df_movies |>
+  mutate(votes_thous = gsub("K", "", votes)) |>
+  mutate(votes_thous = gsub("M", "000", votes_thous)) |>
+  mutate(votes_thous = gsub("[.]", "", votes_thous))
+head(df2)
+```
+
+```{r}
+df2$votes_in_thous <- parse_number(df2$votes_thous)
+head(df2)
+```
+
+## Problem 1: 
+
+Based on the scraped 2019 IMDB movie data frame, create a histogram that shows runtime on the x-axis. Be sure to provide a title, axis label, and caption for the data source.
+
+```{r}
+## ggplot
+```
+
+## Problem 2: 
+
+Create a scatterplot of runtime versus number of votes. Be sure to provide a title, axis label, and caption for the data source.
+
+```{r}
+## ggplot
+```
+
+
+## Problem 3: Use the **filter** function to answer the following question
+
+
+Which movies had a runtime 100-138 minutes, in the top rated 10 movies. Be sure to state the rank and runtime for each movie?
+
+```{r}
+# use filter code here
+```
+
+## Problem 4: In the runtime of 116-135 mins, which movies are from the lowest ranked 10 out of 25?
+
+Again, you must use the filter function to get the exact movie which answers this question. Be sure to state the rank and runtime for each movie.
+
+```{r}
+#  use filter code here
+```

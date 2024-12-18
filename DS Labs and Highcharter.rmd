@@ -50,8 +50,9 @@ The default gray theme of ggplot2 has a rather academic look. You can use one of
 disease_democ_chart <-ggplot(disease_democ, aes(x = infect_rate, y = democ_score)) +
   labs(x="Infectious Disease Prevalence Score",
        y="Democratization Score",
-       title="Comparison of Disease Prevalence and Democratization Score") +
+       title="Comparison of Disease Prevalence \n and Democratization Score") +
   theme_minimal(base_size = 14, base_family = "serif")
+disease_democ_chart
 ```
 
 
@@ -142,8 +143,6 @@ data("murders")
 library(tidyverse)
 library(ggthemes)
 library(ggrepel)
-#view(murders)
-#write_csv(murders, "murders.csv", na="")
 ```
 
 ## Work with the Murders Dataset 
@@ -190,14 +189,14 @@ data("gapminder")
 west <- c("Western Europe","Northern Europe","Southern Europe",
           "Northern America","Australia and New Zealand")
 
-gapminder <- gapminder |>
+gapminder1 <- gapminder |>
   mutate(group = case_when(
     region %in% west ~ "The West",
     region %in% c("Eastern Asia", "South-Eastern Asia") ~ "East Asia",
     region %in% c("Caribbean", "Central America", "South America") ~ "Latin America",
     continent == "Africa" & region != "Northern Africa" ~ "Sub-Saharan Africa",
     TRUE ~ "Others"))
-gapminder <- gapminder |>
+gapminder2 <- gapminder1 |>
   mutate(group = factor(group, levels = rev(c("Others", "Latin America", "East Asia","Sub-Saharan Africa", "The West"))))
 ```
 
@@ -216,7 +215,7 @@ please do not ever use na.omit()
 
 
 ```{r}
-filter(gapminder, year %in% c(1962, 2013) & !is.na(group) &
+filter(gapminder2, year %in% c(1963, 2013) & !is.na(group) &
          !is.na(fertility) & !is.na(life_expectancy)) |>
   mutate(population_in_millions = population/10^6) |>
   ggplot( aes(x=fertility, y=life_expectancy, col = group, size = population_in_millions)) +
@@ -250,9 +249,13 @@ Focus on just measles
 ```{r}
 library(RColorBrewer)
 data("us_contagious_diseases")
-the_disease <- "Measles"
+unique(us_contagious_diseases$disease)
+```
+
+```{r}
+#the_disease <- "Measles"
 us_contagious_diseases |>
-  filter(!state%in%c("Hawaii","Alaska") & disease ==  the_disease) |>
+  filter(!state%in%c("Hawaii","Alaska") & disease ==  "Measles") |>
   mutate(rate = count / population * 10000 /(weeks_reporting/52)) |>
   mutate(state = reorder(state, rate)) |>
   ggplot(aes(year, state,  fill = rate)) +
@@ -280,7 +283,7 @@ This data includes poll results from the US 2016 presidential elections aggregat
 
 ```{r}
 data(polls_us_election_2016)
-polls_us_election_2016 |>
+poll <- polls_us_election_2016 |>
   filter(state == "U.S." & enddate>="2016-07-01") |>
   select(enddate, pollster, rawpoll_clinton, rawpoll_trump) |>
   rename(Clinton = rawpoll_clinton, Trump = rawpoll_trump) |>
@@ -288,8 +291,12 @@ polls_us_election_2016 |>
   mutate(candidate = factor(candidate, levels = c("Trump","Clinton")))|>
   group_by(pollster) |>
   filter(n()>=10) |>
-  ungroup() |>
-  ggplot(aes(enddate, percentage, color = candidate)) +  
+  ungroup()
+poll
+```
+ 
+```{r}
+  ggplot(data = poll, aes(enddate, percentage, color = candidate)) +  
   geom_point(show.legend = FALSE, alpha=0.4)  + 
   geom_smooth(method = "loess", span = 0.15) +
   scale_y_continuous(limits = c(30,50))
@@ -332,6 +339,7 @@ library(RColorBrewer)
 Load the nations data, and add a column showing GDP in trillions of dollars.
 
 ```{r}
+setwd("C:/Users/rsaidi/Dropbox/Rachel/MontColl/Datasets/Datasets")
 nations <- read_csv("nations.csv") |>
   mutate(gdp_tn = gdp_percap*population/10^12)
 ```
@@ -355,9 +363,10 @@ Now draw a basic chart with default settings:
 # basic symbol-and-line chart, default settings
 highchart() |>
   hc_add_series(data = big4,
-                   type = "line", hcaes(x = year,
-                   y = gdp_tn, 
-                   group = country))
+                   type = "line", 
+                hcaes(x = year,
+                      y = gdp_tn, 
+                      group = country))
                   
 ```
 
@@ -449,7 +458,7 @@ big4_chart <- highchart() |>
             verticalAlign = "top") |>
   hc_tooltip(shared = TRUE,
              borderColor = "black",
-             pointFormat = "{point.country}: {point.gdp_tn:.2f}<br>")
+             pointFormat = "{point.country}: {point.gdp_tn:.2f}")
 big4_chart
 ```
 
