@@ -89,7 +89,7 @@ This unit will explore mapping using leaflet and OpenStreetMaps.
 
 - Use these notes to get started: [**Unit 10 Notes - GIS**](./Data110_unit10.pdf)
 - Use this Quarto document to follow the tutorial to plot Japan earthquakes using leaflet and OpenStreetMaps:
-     - [GIS and Japan Earthquakes Tutorial](./japan_earthquakes_geo_tutorial.qmd)
+     - [GIS and Japan Earthquakes Tutorial](./japan_earthquakes_geo_tutorial_2.qmd)
 - Use this Quarto document as a template to complete your homework assignment:
      - [GIS Assignment - 500 Healthy Cities](./GIS_Assignment_500_Healthy_Cities.qmd)
 - This is an old tutorial on GIS that allows mapping with multiple layers:
