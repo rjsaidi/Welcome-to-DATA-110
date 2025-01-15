@@ -32,7 +32,6 @@ This is a large dataset with over 14,000 observations and 22 variables, includin
 
 ```{r message = FALSE}
 library(leaflet)
-#library(sf)
 library(tidyverse)
 library(knitr)
 ```
@@ -63,9 +62,25 @@ quakes$date <- as.Date(format(ymd_hms(quakes$time),format = '%Y-%m-%d'))
 head(quakes)
 ```
 
+## What are the unique magnitude types?
+
 ```{r}
 unique(quakes$magType)
 ```
+
+## What does these magnitude abbreviations mean?
+
+https://www.usgs.gov/programs/earthquake-hazards/magnitude-types
+
+- Mww  (Moment W-phase)(generic notation Mw)
+- Mwc  (centroid)
+- Mwb  (body wave)
+- Mwr  (regional)
+- Ms20 or Ms  (20sec surface wave)
+- mb  (short-period body wave)
+- Mfa (felt-area magnitude)
+- ML Ml, or ml  (local)
+
 
 ## Create a scatterplot graph of earthquakes with magnitudes greater than 5
 
@@ -92,15 +107,15 @@ Here, we can see that mww and mb types were more prevalent after 2011 and prior 
 
 ```{r}
 ggplot(quakes, aes(x=depth, y=mag, color = magType)) +
-  geom_point(alpha = 0.1) +
   scale_color_viridis_d()+
-  geom_jitter() +
+  geom_jitter(alpha = 0.5) +  # jitter instead of geom_point to add randomness
   labs(title = "Earthquakes in Japan by Magnitude Type",
        caption = "Source: USGS")  +
   theme_bw()
 ```
 
 This plot appears to have two clumps with peaks at \<50 meters depth and about 400-500 meters depth
+
 
 ## Try to Facet for the magType
 
@@ -191,6 +206,8 @@ Some examples:
 
 -   addProviderTiles("Esri.NatGeoWorldMap")
 
+-   addProviderTiles("USGS.USImagery")
+
 First, we need to set the location of the map of Japan. A quick google search gives 36.2 degrees North, 138.2 degrees East. That translates to lng = 138.2, lat = 36.2
 
 (North = + lat, South = - lat, East = + lng, West = - lng)
@@ -254,7 +271,8 @@ popupquake <- paste0(
       "<b>Time: </b>", strong$time, "<br>",
       "<b>Magnitude: </b>", strong$mag, "<br>",
       "<b>Depth (km): </b>", strong$depth, "<br>",
-      "<strong>Place: </strong>", strong$place, "<br>"
+      "<strong>Place: </strong>", strong$place, "<br>",
+      "<strong>Magnitude Type: </strong>", strong$magType, "<br>"
     )
 ```
 
@@ -277,3 +295,22 @@ leaflet() |>
 ```
 
 *Notice the largest point is in 2011, with a magnitude of 9.1, which caused the Fukushima nuclear power plant meltdown.*
+
+## Add colors for 5 major magnitude types:"mb", "mwb", "mwc", "mwr", and "mww"
+
+```{r}
+pal <- colorFactor(palette = c("#7538a1", "#3846a1", "#3880a1","#29b0d9", "#2f9c7b"), 
+               levels = c("mb", "mwb", "mwc", "mwr", "mww"), strong$magType)
+
+leaflet(strong) |>
+  setView(lng = 139, lat = 37, zoom = 6) |>
+  addProviderTiles("Esri.WorldStreetMap")|>
+  addCircles(
+    stroke = FALSE,
+    fillColor = ~pal(magType),
+    radius = sqrt(10^strong$mag) * 2,
+    fillOpacity = 0.8,
+    popup = popupquake
+  )
+```
+
