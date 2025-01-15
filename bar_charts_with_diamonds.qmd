@@ -1,8 +1,15 @@
 ---
 title: "Bar Charts with Diamonds Dataset"
 author: "Rachel Saidi"
-date: "6/1/2021"
-format: html
+format: revealjs
+editor: visual
+theme: serif
+incremental: true  
+slide-number: true
+execute: 
+  echo: true
+  scrollable: true
+  smaller: true
 ---
 
 ## Access Library package - Tidyverse
@@ -35,7 +42,7 @@ Bar graphs are EASY when you have a single categorical variable that defines sev
 
 Here is a tibble to show this table and how you can create a bar graph from this data
 
-## A Tibble (think of this like a dataframe)
+## A Tibble/Tribble (think of this like a dataframe)
 
 We will create a frequency table of the types of cuts that mimick the calculations done to create geom_bar
 
@@ -57,7 +64,9 @@ ggplot(data = demo) +
   geom_bar(mapping = aes(x = cut, y = freq), stat = "identity")
 ```
 
-(Don’t worry that you haven’t seen \<- or tribble() before. You might be able to guess at their meaning from the context, and you’ll learn exactly what they do soon!)
+::: {style="font-size: 50%;"}
+(Don’t worry that you haven’t seen tibble() or tribble() before. You might be able to guess at their meaning from the context, and you’ll learn exactly what they do soon!)
+:::
 
 ## Creating Proportional Bars
 
@@ -65,7 +74,9 @@ You might want to override the default mapping from transformed variables to aes
 
 ## Proportional Bar Graph (Relative Frequencies)
 
+::: {style="font-size: 50%;"}
 You need “group=1” when plotting proportions (try to omit it and see)
+:::
 
 ```{r}
 ggplot(data = diamonds) + 
@@ -74,6 +85,7 @@ ggplot(data = diamonds) +
        title = "Proportional Bar Graph of Diamond Cuts")
 ```
 
+## Some details about proportional plots
 
 To find the variables computed by the stat, look for the help section titled “computed variables”.
 
@@ -83,7 +95,9 @@ You might want to draw greater attention to the statistical transformation in yo
 
 ## Line Plot
 
+::: {style="font-size: 50%;"}
 This is a different way of visualizing center and spread of cuts and depth
+:::
 
 ```{r}
 ggplot(data = diamonds) + 
@@ -96,8 +110,6 @@ ggplot(data = diamonds) +
 ```
 
 ## Fill vs Color
-
-### Position adjustments
 
 There's one more piece of magic associated with bar charts. You can color a bar chart using either the color aesthetic, or, more usefully, fill:
 
@@ -114,8 +126,6 @@ ggplot(data = diamonds, aes(x=cut, fill = cut)) +
 
 ## Try stacking bar graphs with position = "stack"
 
-Note what happens if you map the fill aesthetic to another variable, like clarity: the bars are automatically stacked. Each colored rectangle represents a combination of cut and clarity.
-
 ```{r}
 ggplot(data = diamonds) + 
   geom_bar(aes(x = cut, fill = clarity), position = "stack") +
@@ -123,7 +133,13 @@ ggplot(data = diamonds) +
        title = "Stacked Bar Graph of Diamond Cuts by Clarity")
 ```
 
-The identity position adjustment is more useful for 2d geoms, like points, where it is the default.  position = "fill" works like stacking, but makes each set of stacked bars the same height. This makes it easier to compare proportions across groups.
+::: {style="font-size: 50%;"}
+*Note what happens if you map the fill aesthetic to another variable, like clarity: the bars are automatically stacked. Each colored rectangle represents a combination of cut and clarity.*
+:::
+
+## Note position = "dodge" or "identity" or "fill"
+
+The identity position adjustment is more useful for 2d geoms, like points, where it is the default. position = "fill" works like stacking, but makes each set of stacked bars the same height. This makes it easier to compare proportions across groups.
 
 ## Using position = "fill" the bars fill the vertical space proportionally
 
@@ -146,7 +162,9 @@ ggplot(data = diamonds, aes(x = cut, fill = clarity)) +
 
 ## Change the angle of the x-axis labels
 
+::: {style="font-size: 50%;"}
 When x-axis labels are too long, they may overlap. You can change the text angle with axis.text.x = element_text(angle = 45))
+:::
 
 ```{r}
 ggplot(data = diamonds, aes(x = cut, fill = clarity)) +
@@ -158,7 +176,9 @@ ggplot(data = diamonds, aes(x = cut, fill = clarity)) +
 
 ## Finally, make the x-axis labels fit in a narrow width
 
+::: {style="font-size: 50%;"}
 Here is another option for dealing with x-axis labels when they are long. You can use this function to break words into 2 lines.
+:::
 
 ```{r}
 ggplot(data = diamonds, aes(x = cut, fill = clarity)) +
@@ -166,21 +186,19 @@ ggplot(data = diamonds, aes(x = cut, fill = clarity)) +
   labs(x = "Diamond Cut", y = "Frequency", 
        title = "Side-by-Side Bar Graph of Diamond Cuts by Clarity") +
   scale_x_discrete(labels = function(x) str_wrap(x, width = 5))
-# notice "very good" will fit on two lines instead of one line
 ```
 
+::: {style="font-size: 50%;"}
+Notice "very good" will fit on two lines instead of one line
+:::
 
 ## Bonus "bar-like" graph - Polar Plot
 
 ```{r}
-
 bar <- ggplot(data = diamonds) + 
   geom_bar(aes(x = clarity, fill = clarity), 
            show.legend = FALSE, width = 1) + 
   theme(aspect.ratio = 1)
-bar + coord_flip()
 
 bar + coord_polar()
 ```
-
-
