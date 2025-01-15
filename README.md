@@ -56,10 +56,10 @@ This unit will dig deep into data ethics and the reproducibility crisis.
 This unit will explore more complex data visualizations beyond bar graphs, histograms, and scatterplots.
 
 - Use these notes to get started: [**Unit 4 Notes - Treemaps, Heatmaps, Streamgraphs, and Alluvials**](./Data110_unit5.pdf)
-- Use this Quarto document on treemaps, heatmaps, streamgraphs, and alluvials:
-     - [Treemaps Heatmaps Streamgraphs and Alluvials](./heatmap_treemap_streamgraph_alluvial.qmd)
-- This is the revealjs version of the same notes:
-     - [Treemaps Heatmaps Streamgraphs and Alluvials Revealjs](./heatmap_treemap_streamgraph_alluvial_revealjs.qmd)
+- Use this Quarto document on treemaps, heatmaps, and alluvials:
+     - [Treemaps Heatmaps Streamgraphs and Alluvials](./heat_tree_stream_alluvial_plots.qmd)
+- Part 2 shows how to create a streamgraph, though this does not publish on rpubs:
+     - [Treemaps Heatmaps Streamgraphs and Alluvials Revealjs](./heat_tree_stream_alluvial_part_2.qmd)
 
 ## Unit 6 - Scatterplots, Correlation, and Linear Models
 This unit will explore the relationship between two or more variables and the process of model building.
