@@ -1,0 +1,68 @@
+---
+title: "Heat Tree Stream Alluvial - Part 2"
+author: "R Saidi"
+format: docx
+editor: visual
+smaller: true
+scrollable: true
+---
+
+## Streamgraphs
+
+```{r message=FALSE, warning=FALSE}
+library(treemap)
+library(tidyverse)
+library(RColorBrewer)
+library(webshot2)
+```
+
+## Streamgraphs (unfortunately do not render to rpubs)
+
+This type of visualisation is a variation of a stacked area graph, but instead of plotting values against a fixed, straight axis, a streamgraph has values displaced around a varying central baseline. Streamgraphs display the changes in data over time of different categories through the use of flowing, organic shapes that somewhat resemble a river-like stream. This makes streamgraphs aesthetically pleasing and more engaging to look at.
+
+The size of each individual stream shape is proportional to the values in each category. The axis that a streamgraph flows parallel to is used for the timescale. Color can be used to either distinguish each category or to visualize each category's additional quantitative values through varying the color shade.
+
+## What are streamgraphs good for?
+
+Streamgraphs are ideal for displaying high-volume datasets, in order to discover trends and patterns over time across a wide range of categories. For example, seasonal peaks and troughs in the stream shape can suggest a periodic pattern. A streamgraph could also be used to visualize the volatility for a large group of assets over a certain period of time.
+
+The downside to a streamgraph is that they suffer from legibility issues, as they are often very cluttered. The categories with smaller values are often drowned out to make way for categories with much larger values, making it impossible to see all the data. Also, it's impossible to read the exact values visualized, as there is no axis to use as a reference.
+
+### Streamgraph code
+
+The code for making streamgraphs has changed with new updates to R. You have to download and install Rtools40 from the link, https://cran.rstudio.com/bin/windows/Rtools/. and then used the code provided below.
+
+## Load devtools and libraries to create the following streamgraphs
+
+install the package "devtools" also run the line: devtools::install_github("hrbrmstr/streamgraph") , then comment it out.
+
+```{r message=FALSE}
+#install "devtools" (as a package)
+devtools::install_github("hrbrmstr/streamgraph") 
+library(streamgraph)  # install "streamgraph" as a package
+library(babynames)  # install "babynames"
+data(babynames)
+```
+
+## Now look at the babynames dataset
+
+```{r}
+ncol(babynames)
+head(babynames)
+```
+
+```{r}
+summary(babynames$year)
+```
+
+## Babynames streamgraph
+
+Mouse over the colors and years to look at the pattern of various names
+
+```{r}
+babynames |>
+  filter(grepl("^Jo", name)) |>
+  group_by(year, name) |>
+  tally(wt=n) |>
+  streamgraph("name", "n", "year")
+```
