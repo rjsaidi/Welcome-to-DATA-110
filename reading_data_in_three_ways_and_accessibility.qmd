@@ -1,0 +1,343 @@
+---
+title: "Reading Data in 3 Ways"
+author: "Rachel Saidi"
+format: html
+---
+
+
+# Load Data from Three Different Sources
+
+In the following notes, you will load data directly from a URL, directly from pre-build datasets in R, and finally from a file you save in your own folder.
+
+## Load Data Method 1:  Load Data from a URL 
+
+You can load data from a folder or you can load data directly from a URL. The next example loads the dataset, "Test Scores", directly from the URL where it resides. 
+
+
+
+```{r message=FALSE}
+library(tidyverse)  # you will use the readr package in tidyverse to read in this data
+allscores <- read_csv("https://goo.gl/MJyzNs")  # do not use read.csv()
+head(allscores)
+```
+
+Notice R interprets the variable "group" as continuous values (col_double). We will fix this later. The command "dim" provides the dimensions of the data, which are 22 observations (rows) by 4 variables (columns).
+
+### Use Side-by-Side Boxplots -- Done Incorrectly (at first!)
+
+Here is some easy code to create 3 groups of boxplots with some easy-to-access data, filled by group. Since the groups are discrete, you can get rid of the shading.
+
+
+```{r }
+boxpl <- allscores |> 
+  ggplot(aes(y=diff, group = group, fill = group)) + 
+  geom_boxplot()
+boxpl
+```
+
+Notice that the legend give a continuous range of values for the scores, even though the scores are only 1, 2, or 3. The code guides(fill = FALSE) will get rid of the legend. Also, the x-axis labels make no sense. We will deal with that later.
+
+### Try to correct for the misrepresenting legend
+
+```{r}
+boxpl2 <- boxpl + guides(fill = FALSE)
+boxpl2
+```
+
+### Add your own color choices for the 3 different boxes
+
+Ensure that the groups are considered as factors, rather than numbers. 
+
+
+### Use as.factor as another way to ensure numerical values are read as categorical
+
+
+
+```{r}
+allscores$group <- as.factor(allscores$group)
+head(allscores)
+```
+
+Then manually fill with the 3 colors: white, light gray, and dark gray. Make the boxplots orient horizontally. 
+
+```{r}
+boxpl3 <- allscores |>
+  ggplot() + geom_boxplot(aes(y=diff, group=group, fill=group)) +
+  scale_fill_manual(values=c("white","lightgray","darkgray")) +
+  theme(axis.text.y=element_blank()) + # Remove the useless y-axis tick values.
+  labs(title = "Score Improvements Across Three Groups",
+          y = "Difference in Pre and Post Test Scores") +
+  coord_flip()
+boxpl3
+```
+
+
+## Another way to convert to factor levels
+
+Use the factor function:
+
+mutate creates a new variable
+"1" categorical factor not a
+
+```{r}
+boxpl3 <- allscores |>
+  mutate(group=factor(group, levels=c("1","2","3"), ordered=TRUE)) |>
+  ggplot() + 
+  geom_boxplot(aes(y=diff, group=group, fill=group)) +
+  scale_fill_manual(values=c("white","lightgreen","lightpink")) +
+  theme(axis.text.y=element_blank()) +
+  labs(title = "Score Improvements Across Three Groups",
+          y = "Difference in Pre and Post Test Scores") +
+  coord_flip()
+boxpl3
+```
+
+
+
+## Load Data Method 2:  Use prebuilt dataset
+
+We will use the penguins dataset that is pre-build in the "palmerpenguins" package to create scatterplots.
+
+
+### Load the package and feed data into global environment
+
+```{r}
+library(palmerpenguins)
+data("penguins")  # loads the penguins dataset into your global environment
+```
+
+
+It is essential to recognize that variables may be: int (integer), num (numeric), or double vs char (character) and factor (for categories)
+
+Typically, chr or factor are used for discrete variables and
+int, dbl, or num for continuous variables.
+
+### Use head() function to view the tibble and variable types
+
+```{r}
+head(penguins)
+```
+
+
+
+### Combine fig.cap for the Figure label and fig.alt for the alt text
+
+fig.cap and fig.alt are YAML code embedded in chunks - these are tags for screen readers to improve accessibility in your document. The colors darkorange, purple, and cyan4 improve visibility of colors for colorblind access.
+
+Example of using fig.cap and fig.alt in the next chunk:
+
+*{r fig.cap="Bigger flippers, bigger bills", fig.alt = "Scatterplot of flipper length by bill length of 3 penguin species, where we show penguins with bigger flippers have bigger bills."}*
+
+
+
+```{r fig.cap="Bigger flippers, bigger bills", fig.alt = "Scatterplot of flipper length by bill length of 3 penguin species, where we show penguins with bigger flippers have bigger bills."}
+
+scatter1 <- penguins |>
+  filter(!is.na(flipper_length_mm) & !is.na(bill_length_mm)) |>
+  ggplot(aes(x = flipper_length_mm,
+                       y = bill_length_mm,
+                       color = species)) +
+  geom_point(aes(shape = species), alpha = 0.8) +
+  scale_color_manual(values = c("#eb6b34","purple","cyan4"))  +
+  labs(title = "Palmer Penguins Flipper Length to Bill Length by Species",
+       x = "Flipper Length (mm)",
+       y = "Bill Length (mm)") +
+  theme_bw()
+scatter1
+```
+
+*Notice both SHAPE and COLOR are used to help the viewer see the differences in the 3 penguin species.*
+
+
+## Load Data Method 3: read in a saved csv from your computer
+
+This is the most important skill, to be able to read in a csv file that is saved on your computer in order to load it into R Studio to work with.
+
+Find a dataset, save it in a folder on your computer. This folder is called your *working directory*. You will need to **set your working directory**. 
+
+### Clean data headings and variable names
+
+Data often is messy and not ready to use right away!
+
+The data might require some cleaning. Here are some important points to check:
+
+1. Be sure the format is .csv
+2. Be sure there are no spaces between variable names (headers).
+3. Set all variable names to lowercase so you do not have to keep track of capitalizing.
+
+
+
+### Loading Data from a Working Directory  (folder)
+
+The easiest way to find out what your current working directory is, use the command getwd().
+
+```{r}
+getwd()
+```
+
+This command shows you (in your console below) the path to your directory. My current path is:
+[1] "C:/Users/rsaidi/Dropbox/Rachel/MontColl/DATA110/Notes"
+
+If you want to change the path, there are several ways to do so. I find the easiest way to change it is to click the "Session" tab at the top of R Studio. Select "Set Working Directory", and then arrow over to "Choose Directory". At this point, it will take you to your computer folders, and you need to select where your data is held. I suggest you create a folder called "Datasets" and keep all the data you load for this class in that folder.
+
+Notice that down in the console below, it will show the new path you have chosen:  setwd("C:/Users/rsaidi/Dropbox/Rachel/MontColl/Datasets/Datasets"). At this point, I copy that command and put it directly into a new chunk.
+
+### Load the libraries
+
+**Zoo** is an abbreviation used in time series analysis, which stands for “Z’s ordered observations”
+
+```{r}
+# install.packages("zoo")
+library(zoo)  # this package will help us re-format the period to be a useable date.
+```
+
+
+### Load the data
+
+The following data comes from New York Fed (https://www.newyorkfed.org/microeconomics/hhdc.html) regarding household debt for housing and non-housing expenses. Debt amounts are in $ trillions for all US households.
+
+Download this dataset, Household_debt, from http://bit.ly/2P3084E and save it in your dataset folder. Change your working directory to load the dataset from YOUR folder. Then run this code. 
+
+```{r}
+# be sure to change this to your own directory
+setwd("C:/Users/rsaidi/Dropbox/Rachel/MontColl/Datasets/Datasets")
+household <- read_csv("household_debt.csv")
+head(household)
+```
+
+
+### Clean data headings and variable names
+
+Very soon, you will find data from other sources. The data will require some cleaning. Here are some important points to check:
+1. Be sure the format is .csv
+2. Be sure there are no spaces between variable names (headers).
+3. Set all variable names to lowercase so you do not have to keep track of capitalizing.
+
+
+### Here are some useful cleaning commands:
+
+Make all headings (column names) lowercase. 
+Remove all spaces between words in headings and replace them with underscores with the gsub command. 
+Then look at it with "head".
+
+```{r}
+names(household) <- tolower(names(household))
+names(household) <- gsub(" ","_",names(household))
+# gsub will remove spaces in between words in the headers and replace them with underscore
+head(household)
+```
+
+
+### Mutate
+
+Mutate is a powerful command in tidyverse. It creates a new variable (column) in your dataset. In our dataset, "period" is not anything useful if we want to plot chronological data. So we will use mutate from "tidyverse" with the package "zoo" to create a useable date format. 
+
+
+
+```{r}
+summary(household$mortgage)
+```
+
+## create two new variables
+
+1. Use mutate to create a variable "mortgage_ratio" that computes each mortgage in proportion to the total.
+2. Use mutate to create a variable "mortgage_highlow" that makes a dichotomous variable that is "low" if lower than the median and "high" otherwise.
+
+mutate - creates a new variable
+
+```{r}
+house <- household |>
+  mutate(mortgage_ratio  = mortgage/total) |>
+  mutate(mortgage_highlow = ifelse(mortgage < 8.265, "low", "high"))
+```
+
+
+### Create a new DATE variable from "period"
+
+You should see that there are 64 observations and 8 variables. All variables are "col_double" (continuous values) except "period", which is interpreted as characters.We need to use the library "zoo" package to fix the unusual format of the "period". We will mutate it to create a new variable, date.
+
+
+```{r}
+household_debt <- house |>
+   mutate(date = as.Date(as.yearqtr(period, format = "%y:Q%q")))
+head(household_debt)
+```
+
+### Plot various loan types
+
+```{r, fig.cap = "Mortgage Debt Between 2003 and 2018"}
+
+plot1 <- household_debt |> 
+  ggplot(aes(date, mortgage)) +
+  geom_point() +
+  labs(title = "Mortgage Debt(in $ trillions) Between 2003 and 2018",
+       x = "Years (2003-2018)",
+       caption = "Source: New York Fed")
+plot1
+```
+
+## Use the mortage_ratio values instead of mortgage debt
+
+```{r, fig.cap = "Mortgage Ratio To Total Debt Between 2003 and 2018"}
+
+plot1a <- household_debt |> 
+  ggplot(aes(date, mortgage_ratio)) +
+  geom_point() +
+  labs(title = "Mortgage Debt(in $ trillions) Between 2003 and 2018",
+       x = "Years (2003-2018)",
+       caption = "Source: New York Fed")
+plot1a
+```
+
+*Notice that the mortgage ratio to total debt dramatically drops after about 2010.*
+
+## Credit Card Debt
+
+```{r, fig.cap = "Credit Card Debt Between 2003 and 2018", fig.alt = "Trend of credit card debt over time shows peaks in 2008 and 2018 and lowest values in 2014"}
+
+plot2 <- household_debt |> 
+  ggplot(aes(date, credit_card)) +
+  geom_point() + 
+  labs(title = "Credit Card Debt(in $ trillions) Between 2003 and 2018",
+       x = "Years (2003-2018)",
+       caption = "Source: New York Fed")
+plot2
+```
+
+### Pivot the table from "wide" to "long" format
+
+This will enable use to use the "facet" function in the next step.
+
+
+```{r}
+house_long <- household_debt |> 
+  pivot_longer(
+        cols = 2:7,
+    names_to = "debt_type",
+    values_to = "debt_amnt")
+head(house_long)
+```
+
+
+## Use "facet_wrap" to show all types of debt together
+
+Facet_wrap allows you to plot all variables together for comparison. 
+
+*In order to do this, you have to "reshape the "data from a wide format to a long format.* Use **gather** from tidyr package to do this.
+
+```{r, fig.cap = "Facet Wrap of All Types of Household Debt 2003-2018", fig.alt = "The highest household debt in $ trillions is mortgage, which surpasses auto loans, credit cards, he-revolving, and student loans"}
+
+plot3 <- house_long %>%
+  ggplot(aes(x=date, y= debt_amnt))+
+  geom_point(aes(color = debt_type))+
+  facet_wrap(~debt_type) + 
+  labs(title = "All Debt Types (in $ trillions) Between 2003 and 2018",
+       x = "Years (2003-2018)",
+       y = "Debt Amount in $ Trillions",
+       caption = "Source: New York Fed",
+       color = "Debt Type") +
+  theme_minimal()
+plot3
+```
+
+
