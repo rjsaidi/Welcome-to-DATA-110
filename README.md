@@ -57,7 +57,7 @@ This unit will explore more complex data visualizations beyond bar graphs, histo
 
 - Use these notes to get started: [**Unit 4 Notes - Treemaps, Heatmaps, Streamgraphs, and Alluvials**](./Data110_unit5.pdf)
 - Use this Quarto document on treemaps, heatmaps, and alluvials:
-     - [Treemaps Heatmaps Streamgraphs and Alluvials](./heatmaps_treemaps_alluvials.qmd)
+     - [Heatmaps, Treemaps, and Alluvials](./heatmaps_treemaps_alluvials.qmd)
 - Part 2 shows how to create a streamgraph, though this does not publish on rpubs:
      - [Streamgraphs with Babynames](./heatmaps_treemaps_alluvials.qmd)
 
