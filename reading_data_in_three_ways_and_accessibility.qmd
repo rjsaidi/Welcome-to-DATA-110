@@ -268,7 +268,7 @@ head(household_debt)
 ```{r, fig.cap = "Mortgage Debt Between 2003 and 2018"}
 
 plot1 <- household_debt |> 
-  ggplot(aes(date, mortgage)) +
+  ggplot(aes(x=date, y=mortgage)) +
   geom_point() +
   labs(title = "Mortgage Debt(in $ trillions) Between 2003 and 2018",
        x = "Years (2003-2018)",
