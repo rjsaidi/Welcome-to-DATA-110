@@ -32,7 +32,7 @@ In this unit, you will learn about the basics of github, and you will learn how 
 
 - Use these notes to get started:  [**Unit 2 Notes - Using Github and Handling Data**](./Data110_unit2.pdf)
 - Use this Quarto document for your first coding assignment using the pre-built Airquality dataset:
-     - [Airquality HW](./AirqualityHW html.qmd)
+     - [Airquality HW](./AirqualityHW.qmd)
 
 ## Unit 3 - Reading in Data in 3 Different Ways
 In this unit, we will learn to read in data in 3 different ways. We will also learn to pivot from wide to long format to create facet plots.
