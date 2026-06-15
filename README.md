@@ -24,8 +24,8 @@ This is our introduction to data visualization. Let's get started!
 - Use these notes to get started:     [**Unit 1 Notes - Intro to Data Visualization and R Studio**](./Data110_unit1.pdf)
 - Here is your first Quarto document. You will learn how to create bar charts using the pre-built Diamonds dataset:
      - [Bar Charts with Diamonds Dataset](./bar_charts_with_diamonds.qmd)
-- Here is the same Bar Charts tutorial as slides:
-     - [Bar Charts with Diamonds Slides](./bar_charts_with_diamonds_dataset.pptx)
+- Here is the same Bar Charts tutorial as a hyperlink:
+     - https://rpubs.com/rsaidi/1212274 
 
 ## Unit 2 - Using Github and Handling Data
 In this unit, you will learn about the basics of github, and you will learn how to start creating plots using ggplot.
