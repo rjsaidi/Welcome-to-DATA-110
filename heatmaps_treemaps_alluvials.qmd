@@ -24,9 +24,14 @@ data(airlines)
 
 Use "group_by" together with summarize functions
 
-::: callout-warning
+::: callout-important
 ## Never use the na.omit() or drop_na() functions on an entire dataset!
 :::
+
+```{r}
+flights_nona1 <- na.omit(flights)
+```
+
 
 ```{r}
 flights_nona <- flights |>
@@ -99,6 +104,21 @@ by_dest_heatmap <- heatmap(by_dest_matrix,
 
 PSE - Ponce Mercedita Airport, PR ABQ - Albuquerque, NM BQN - Rafael Hernández Airport, PR SJC - San José Mineta, CA MCO - Orlando International, FL FLL - Fort Lauderdale International, FL
 
+```{r}
+# convert pivot_longer
+flights_long <- by_dest |>
+  pivot_longer(cols = 2:5,
+               names_to = "metric_type",
+               values_to = "metric_value"
+  )
+```
+
+```{r}
+ggplot(flights_long, aes(x=metric_type, y=dest, fill = metric_value))+
+  geom_tile()
+```
+
+
 ## Treemaps
 
 Treemaps display hierarchical (tree-structured) data as a set of nested rectangles. Each branch of the tree is given a rectangle, which is then tiled with smaller rectangles representing sub-branches. A leaf node's rectangle has an area proportional to a specified dimension of the data.\[1\] Often the leaf nodes are colored to show a separate dimension of the data.
@@ -116,15 +136,16 @@ Also remove "Inc." or "Co." from the Carrier Name
 ```{r}
 flights2 <- left_join(flights_nona, airlines, by = "carrier")
 flights2$name <- gsub("Inc\\.|Co\\.", "", flights2$name)
+flights2$month_label <- month(flights2$month, label = TRUE, abbr = TRUE)
 ```
 
 ```{r}
 # Convert months from numerical to abbreviated labels
 flights3 <- flights2 |>
-  group_by(name)|>
+  group_by(month_label)|>  # name = name of the airline
   summarise(avg_dist = mean(distance), # calculates the mean distance traveled
             avg_arr_delay = mean(arr_delay))  # calculates the mean arrival delay
-#flights2$month_label <- month(flights2$month, label = TRUE, abbr = TRUE)
+
 ```
 
 ## Create a treemap for NYC FLights
@@ -141,7 +162,7 @@ flights3 <- flights2 |>
 library(RColorBrewer)
 library(treemap)
 treemap(flights3, 
-        index="name", # airline
+        index="month_label", # airline
         vSize="avg_dist", 
         vColor="avg_arr_delay", 
         type="manual",    
