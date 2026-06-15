@@ -7,7 +7,7 @@ editor: visual
 
 ## Airquality Tutorial and Homework Assignment
 
-[![](airquality image.png){width="377"}](airnow.gov)
+[![](airquality%20image.png){width="377"}](airnow.gov)
 
 ## Load in the library
 
@@ -65,19 +65,21 @@ var(airquality$Wind)
 Sometimes we prefer the months to be numerical, but here, we need them as the month names. There are MANY ways to do this. Here is one way to convert numbers 5 - 9 to May through September
 
 ```{r}
-airquality$Month[airquality$Month == 5]<- "May"
-airquality$Month[airquality$Month == 6]<- "June"
-airquality$Month[airquality$Month == 7]<- "July"
-airquality$Month[airquality$Month == 8]<- "August"
-airquality$Month[airquality$Month == 9]<- "September"
+airquality1 <- airquality |>
+  mutate(month_name = case_when(Month == 4 ~ "April",
+                                Month == 5 ~ "May",
+                                Month == 6 ~ "June",
+                                Month == 7 ~ "July",
+                                Month == 8 ~ "August",
+                                Month == 9 ~ "September"))
 ```
 
 ## Now look at the summary statistics of the dataset
 
-See how Month has changed to have characters instead of numbers (it is now classified as "character" rather than "integer")
+See how Month has changed to have characters instead of numbers (it is now classified as "character" rather than "integer") in the new airquality1 dataframe.
 
 ```{r}
-summary(airquality$Month)
+summary(airquality1$Month)
 ```
 
 ## Month is a categorical variable with different levels, called factors.
@@ -85,7 +87,7 @@ summary(airquality$Month)
 This is one way to reorder the Months so they do not default to alphabetical (you will see another way to reorder DIRECTLY in the chunk that creates the plot below in Plot #1
 
 ```{r}
-airquality$Month<-factor(airquality$Month, 
+airquality1$Month<-factor(airquality1$Month, 
                          levels=c("May", "June","July", "August",
                                   "September"))
 ```
@@ -95,17 +97,17 @@ airquality$Month<-factor(airquality$Month,
 ::: {style="font-size: 75%;"}
 Here is a first attempt at viewing a histogram of temperature by the months May through September. We will see that temperatures increase over these months. The median temperature appears to be about 75 degrees.
 
--   **fill** = Month colors the histogram by months between May - Sept.
+- **fill** = Month colors the histogram by months between May - Sept.
 
--   **scale_fill_discrete(name = "Month"...)** provides the month names on the right side as a legend in chronological order. This is a different way to order than what was shown above.
+- **scale_fill_discrete(name = "Month"...)** provides the month names on the right side as a legend in chronological order. This is a different way to order than what was shown above.
 
--   **labs** allows us to add a title, axes labels, and a caption for the data source
+- **labs** allows us to add a title, axes labels, and a caption for the data source
 :::
 
 ## Plot 1 Code
 
 ```{r}
-p1 <- airquality |>
+p1 <- airquality1 |>
   ggplot(aes(x=Temp, fill=Month)) +
   geom_histogram(position="identity")+
   scale_fill_discrete(name = "Month", 
@@ -128,18 +130,18 @@ Is this plot useful in answering questions about monthly temperature values?
 
 ## Plot 2: Improve the histogram of Average Temperature by Month
 
--   Outline the bars in white using the color = "white" command
+- Outline the bars in white using the color = "white" command
 
--   Use alpha to add some transparency (values between 0 and 1)
+- Use alpha to add some transparency (values between 0 and 1)
 
--   Change the binwidth
+- Change the binwidth
 
--   Add some transparency and white borders around the histogram bars.
+- Add some transparency and white borders around the histogram bars.
 
 ## Plot 2 Code
 
 ```{r}
-p2 <- airquality |>
+p2 <- airquality1 |>
   ggplot(aes(x=Temp, fill=Month)) +
   geom_histogram(position="identity", alpha=0.5, binwidth = 5, color = "white")+
   scale_fill_discrete(name = "Month", labels = c("May", "June","July", "August", "September")) +
@@ -167,7 +169,7 @@ Did this improve the readability of the plot?
 We can see that August has the highest temperatures based on the boxplot distribution.
 
 ```{r}
-p3 <- airquality |>
+p3 <- airquality1 |>
   ggplot(aes(Month, Temp, fill = Month)) + 
   labs(x = "Months from May through September", y = "Temperatures", 
        title = "Side-by-Side Boxplot of Monthly Temperatures",
@@ -196,7 +198,7 @@ Use the **scale_fill_grey** command for the grey-scale legend, and again, use **
 Here we just changed the color palette to gray scale using **scale_fill_grey**
 
 ```{r}
-p4 <- airquality |>
+p4 <- airquality1 |>
 ggplot(aes(Month, Temp, fill = Month)) + 
   labs(x = "Monthly Temperatures", y = "Temperatures", 
        title = "Side-by-Side Boxplot of Monthly Temperatures",
@@ -220,8 +222,8 @@ Be sure to include a title, axes labels, and caption for the datasource in your 
 
 ## Write a brief essay here
 
--   Describe the plot type you have created
+- Describe the plot type you have created
 
--   Any insights that the plot shows
+- Any insights that the plot shows
 
--   Describe any special code you used to make this plot
+- Describe any special code you used to make this plot
