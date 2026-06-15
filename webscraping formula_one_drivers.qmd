@@ -1,0 +1,72 @@
+---
+title: "Webscrape Wikipedia Formula One Drivers "
+format: docx
+---
+
+## Load the libraries
+
+```{r}
+library(tidyverse)
+library(rvest)
+```
+
+## Link to the URL you intend to scrape
+
+HTTP GET request
+
+https://en.wikipedia.org/wiki/List_of_Formula_One_drivers
+
+```{r}
+url <-"https://en.wikipedia.org/wiki/List_of_Formula_One_drivers"
+webpage <- read_html(url)
+class(webpage)
+```
+
+## Extract all tables
+
+```{r}
+tables <- webpage |>
+  html_nodes("table.wikitable") |>
+  html_table(fill = TRUE)
+
+# How many tables did we find?
+length(tables)
+```
+
+*There are three tables.*
+
+## Inspect the size of the first table
+
+```{r}
+# Print the number of rows in each table
+sapply(tables, nrow)
+```
+
+## Select the Drivers Table (the second table)
+
+```{r}
+drivers_raw <- tables[[2]]
+
+# Preview
+glimpse(drivers_raw)
+head(drivers_raw)
+```
+
+## Clean the table
+
+```{r}
+names(drivers_raw) <- tolower(names(drivers_raw))
+names(drivers_raw) <- gsub(" ", "_", names(drivers_raw))
+names(drivers_raw)
+```
+
+
+
+## Use the Formula_one Drivers data frame to create your own visualization
+
+Be sure it has a title, axes labels, caption for the data source (the website url). Make sure you include at least 3 variables in your plot that show: colors, sizes or other distinguishing elements.
+
+
+
+*******************************************************************************
+

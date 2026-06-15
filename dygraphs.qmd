@@ -1,0 +1,40 @@
+---
+title: "Dygraphs"
+format: html
+editor: visual
+---
+
+## Time series
+
+```{r}
+library(xts) #eXtensible time series data
+library(dygraphs)
+```
+
+## From 2020
+
+```{r}
+by_date <- detentions |>
+  filter(!is.na(`Stay Book In Date Time`)) |>
+  group_by(`Stay Book In Date Time`) |>
+  dplyr::summarize(count = n())
+```
+
+## Transform the new data frame into a type suitable for time series analysis.
+
+```{r}
+by_date <- xts(by_date$count, order.by = by_date$`Stay Book In Date Time`)
+```
+
+## Create chart using dygraph packages of interactive time series charts
+
+```{r}
+dygraph(by_date, 
+        main = "<font size=5>ICE Detentions 2020 to Oct 2025</font> <br> <small> deportationdata.org </small>",
+        ylab = "Frequency") |>
+  dyRangeSelector() |>
+  dySeries("V1", label = "Frequency", color = "#6b705c") |>
+  dyLegend(show = "follow") |>
+  dyOptions( fillGraph = TRUE)
+```
+

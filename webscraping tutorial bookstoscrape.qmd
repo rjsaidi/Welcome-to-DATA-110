@@ -1,0 +1,363 @@
+---
+title: "Webscraping Tutorial with books.toscrape.com"
+format: docx
+author: Rachel Saidi
+---
+
+# Webscraping with books.toscrape.com
+
+[![Website to teach webscraping](images/bookstoscrape-01.jpg){width="391"}](books.toscrape.com)
+
+## Install necessary packages for this project
+
+```{r message=FALSE, warning=FALSE}
+
+#install.packages('rvest')
+library(rvest)
+library(tidyverse)
+#install.packages("robotstxt")
+library(robotstxt)
+```
+
+### Use the following URL for our webscraping tutorial
+
+https://books.toscrape.com/
+
+
+## Inspect the html and css code on the website
+
+- use right click "inspect" to get to the website code
+
+## This tutorial walks through the steps from setup to export:
+
+1. **Load the data and fetch the webpage** - `read_html()` downloads and parses the HTML
+2. **Inspect selectors** — understand which CSS selectors map to each data field
+3. **Extract fields** — titles, ratings, prices, stock status, and image URLs
+5. **Build a data frame** — combine everything with `tibble()`
+6. **Paginate** — loop through all 50 pages to collect all 1,000 books
+7. **Export** — save to CSV with `write.csv()`
+
+A few things worth highlighting for students:
+
+- The **rating** is a CSS class word ("One", "Two", etc.), not a number — so we need `gsub()` to clean it, and the bonus section shows how to convert it to numeric.
+
+- The **image URL** is a relative path on the site, so we replace the `../../` prefix with the full base URL.
+
+- `Sys.sleep(0.5)` in the pagination loop is a good habit — it's called *polite scraping* and avoids overloading the server.
+
+## Fetch the HTML
+
+Use read_html() to download and parse the page. Think of it as loading the page source into R so you can query it.
+
+
+## Step 1 - Load the data and fetch the webpage
+
+```{r}
+# Store the URL
+url <- "https://books.toscrape.com"
+paths_allowed(url) # checks whether the website allows webscraping
+```
+
+
+
+```{r}
+# Read and parse the HTML
+webpage <- read_html(url)
+```
+
+## Step 2 - Inspect the selectors 
+
+View the structure of your webpage - check what it looks like in your global environment
+
+
+## Inspect & select
+
+Understand the CSS selectors
+Before extracting data, you need the right CSS selectors. Here's what to look for on books.toscrape.com:
+
+article.product_pod — each book card
+h3 > a — book title
+p.star-rating — star rating
+p.price_color — price
+p.availability — stock status
+img.thumbnail — book image
+
+
+## Step 3 - Extract all the fields (columns of information)
+
+Each book lives inside an article.product_pod element
+
+
+```{r}
+books <- webpage |>
+  html_elements("article.product_pod")
+```
+
+
+# How many books are on this page?
+
+```{r}
+length(books)
+```
+
+*Should be 20*
+
+
+Scrape titles, ratings, prices, stock, and images
+Now extract each data field from within the book nodes. We use html_element() (singular) to get the first match inside each book card.
+
+## Book titles
+
+
+```{r}
+# Titles are in the "title" attribute of the <a> tag inside <h3>
+titles <- books |>
+  html_element("h3 > a") |>
+  html_attr("title")
+head(titles)
+```
+
+
+## Star ratings
+
+Ratings are stored as a CSS class: "One", "Two", "Three" etc. We need to extract the class string and clean it
+
+```{r}
+ratings_raw <- books |>
+  html_element("p.star-rating") |>
+  html_attr("class")
+head(ratings_raw)
+```
+
+
+
+## Remove "star-rating " prefix to isolate the word
+
+Use gsub
+
+```{r}
+ratings <- gsub("star-rating", "", ratings_raw)|>
+  trimws()
+head(ratings)
+```
+
+## Prices
+
+```{r}
+# Prices sit in a <p> with class "price_color"
+prices <- books |>
+  html_element("p.price_color") |>
+  html_text2()
+head(prices)
+```
+
+## Clean the prices 
+
+Remove the "£" symbol and ensure the value is numeric
+
+```{r}
+prices <- as.numeric(gsub("£", "", prices))
+head(prices)
+```
+
+
+## Stock status
+
+Availability is in a <p> with class "availability" - Use trimws() to remove surrounding whitespace
+
+```{r}
+stock <- books |>
+  html_element("p.availability") |>
+  html_text2() |>
+  trimws()
+head(stock)
+```
+
+## Book images
+
+Images use the "src" attribute on <img class="thumbnail">. We need to prefix the base URL since src is a relative path
+
+
+```{r}
+images <- books |>
+  html_element("img.thumbnail") |>
+  html_attr("src") |>
+  gsub("../../", "https://books.toscrape.com/", x = _)
+head(images)
+```
+
+
+
+Why do we need to fix the image URL? 
+
+The src attribute on this site uses a relative path like ../../media/cache/.... We replace the ../../ with the base URL so the links actually work.
+
+
+## Step 5 — Build a clean data frame
+
+
+Combine all five vectors into a single tidy data frame using tibble() (from dplyr) to test if you have scraped everything properly so far.
+
+```{r}
+test_df <- tibble(
+  title  = titles,
+  rating = ratings,
+  price  = prices,
+  stock  = stock,
+  image  = images
+)
+head(test_df)
+```
+
+
+## Step 6 — Paginate
+
+Scrape all 50 pages
+
+The site has 50 pages of books. Wrap the scraping logic in a loop that builds the URL for each page and binds the results together.
+
+```{r}
+# Empty list to collect each page's data
+all_books <- list()
+
+for (i in 1:50) {
+
+  # Page 1 uses the root URL; pages 2+ use /catalogue/page-N.html
+  if (i == 1) {
+    url <- "https://books.toscrape.com"
+  } else {
+    url <- paste0("https://books.toscrape.com/catalogue/page-", i, ".html")
+  }
+
+  page  <- read_html(url)
+  books <- html_elements(page, "article.product_pod")
+
+  all_books[[i]] <- tibble(
+    title  = html_attr(html_element(books, "h3 > a"), "title"),
+    rating = gsub("star-rating ", "", html_attr(html_element(books, "p.star-rating"), "class")),
+    price  = html_text2(html_element(books, "p.price_color")),
+    stock  = trimws(html_text2(html_element(books, "p.availability"))),
+    image  = gsub("../../", "https://books.toscrape.com/",
+               html_attr(html_element(books, "img.thumbnail"), "src"))
+  )
+
+  # Be polite — pause briefly between requests
+  Sys.sleep(0.5)
+  cat("Scraped page", i, "\n")
+}
+```
+
+
+## Combine all pages into one data frame
+
+```{r}
+full_df <- bind_rows(all_books)
+nrow(full_df)  # Should be 1000
+```
+
+
+## Why Sys.sleep()? 
+
+Adding a small delay between requests is considered polite scraping. It avoids hammering the server and mimics human browsing behavior — a good habit to build from the start.
+
+
+## Step 7 — Optional Export
+
+Export your final dataset as a CSV file to use in analysis, reports, or other tools.
+
+```{r}
+getwd()
+# Save to your working directory
+write_csv(full_df, "bookstoscrape.csv")
+```
+
+
+## Now explore the data
+
+Remove the "£" symbol and ensure the value is numeric
+
+```{r}
+full_df$price <- as.numeric(gsub("£", "", full_df$price))
+head(full_df)
+```
+
+## Convert rating words to numbers
+
+```{r}
+rating_map <- c(One=1, Two=2, Three=3, Four=4, Five=5)
+full_df1 <- full_df |>
+  mutate(rating_num = rating_map[rating])
+```
+
+
+## Count books per rating
+
+```{r}
+table1 <- full_df1 |> 
+  count(rating, sort = TRUE)
+table1
+```
+
+
+## Average price by star rating
+
+```{r}
+full_df1 |>
+  group_by(rating) |>
+  summarise(avg_price = mean(price, na.rm = TRUE)) |>
+  arrange(desc(avg_price))
+```
+
+## Problem 1: Based on the scraped books_to_scrape data frame, create a scatterplot that shows rating_num on the x-axis and price on the y-axis.
+
+-   Add a regression line - change the default color of the line, remove the standard error band, and make it dot-dash.
+-   Be sure to provide a title, axis labels, and caption for the data source
+-   Change the default ggplot background theme
+
+```{r}
+# scatterplot
+#p1 <-
+
+```
+
+## Problem 2: Create a bar graph
+
+Use any of the information from the full_df1 or any of the aggregated tables. 
+
+- Be sure to include title, axis labels, and caption for the data source
+-   Change the default ggplot background theme
+
+
+
+```{r}
+# bar graph
+#p2 <-
+
+
+```
+
+
+
+## Problem 3: Create one more plot of your own
+
+Create a different plot than plot 1 of your choice.
+
+-   Be sure to show at least 3 colors.
+-   Be sure to provide a title, axis labels, and caption for the data source
+-   Change the default ggplot background theme
+
+```{r}
+#p3 <-
+```
+
+
+```{r}
+#install.packages("patchwork")
+#library(patchwork)
+# p1 + p2 +p3
+```
+
+------------------------------------------------------------------------
+
+
+
