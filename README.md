@@ -59,7 +59,7 @@ This unit will explore more complex data visualizations beyond bar graphs, histo
 - Use this Quarto document on treemaps, heatmaps, and alluvials:
      - [Heatmaps, Treemaps, and Alluvials](./heatmaps_treemaps_alluvials.qmd)
 - Part 2 shows how to create a streamgraph, though this does not publish on rpubs:
-     - [Streamgraphs with Babynames](./heatmaps_treemaps_alluvials.qmd)
+     - [Streamgraphs with Babynames](./streamgraphs.qmd)
 
 ## Unit 6 - Scatterplots, Correlation, and Linear Models
 This unit will explore the relationship between two or more variables and the process of model building.
