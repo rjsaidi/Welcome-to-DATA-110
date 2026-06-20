@@ -1,6 +1,8 @@
 # Welcome-to-DATA-110
 Welcome to DATA 110 Data Visualization and Communication. This site will include course materials, resources, and assignments. 
 
+**For those interested in using these course materials, feel free to contact me to gain access to a syllabus and the course project assignments.**
+
 ## Course Resources
 Resources that may be used throughout the DATA 110 course
 
